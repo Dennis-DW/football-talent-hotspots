@@ -1,0 +1,24 @@
+Package: footballtalenthotspots
+Title: Birthplace Hotspots of England's Premier League and Championship Footballers
+Version: 0.1.0
+Authors@R: person("Dennis", "Wambua", role = c("aut", "cre"))
+Description: Analysis project (not an installable package). This file lists the
+    R packages the project depends on, so renv can record their exact versions.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports:
+    sf,
+    terra,
+    spatstat,
+    spdep,
+    spatialreg,
+    MASS,
+    tidyverse,
+    DBI,
+    RPostgres,
+    arrow,
+    engsoccerdata,
+    shiny,
+    leaflet,
+    here,
+    testthat

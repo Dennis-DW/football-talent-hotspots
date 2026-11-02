@@ -1,0 +1,20 @@
+{
+  "name": "football-talent-hotspots",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "app",
+  "runServices": ["app", "db"],
+  "workspaceFolder": "/workspaces/football-talent-hotspots",
+  "shutdownAction": "stopCompose",
+  "initializeCommand": "test -f .env || cp .env.example .env",
+  "forwardPorts": [3838],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "REditorSupport.r",
+        "ms-python.python",
+        "ckolkman.vscode-postgres"
+      ]
+    }
+  },
+  "remoteUser": "root"
+}

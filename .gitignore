@@ -1,0 +1,32 @@
+# Data: raw downloads and processed outputs are reproducible, not versioned
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.gpkg
+*.tif
+*.tiff
+*.parquet
+*.zip
+
+# Secrets
+.env
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+renv/library/
+renv/staging/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
