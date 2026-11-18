@@ -30,3 +30,6 @@ __pycache__/
 !.vscode/extensions.json
 .DS_Store
 Thumbs.db
+
+# Dashboard data is small and needed to run the app from a fresh clone
+!app/data/*.tif

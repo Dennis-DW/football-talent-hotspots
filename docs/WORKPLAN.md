@@ -28,7 +28,9 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 ## Overview
 
-| Step | Name | Week | Milestone |
+| Step | Name | Week | Milestone |**Title:** Feature Release: Mobile UI Polish, GW11 Caches, Dream Team World XI & Guest Demo Mode
+
+**Description:**
 |---|---|---|---|
 | 1 | Project setup | 1 (days 1–2) | — |
 | 2 | Get the player data and league eligibility | 1 (days 3–5) | M1 |
@@ -67,27 +69,33 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 **Goal:** a clean list of players born 1975–2005 who played in the Premier League or Championship, with birthplaces.
 
-- [ ] Build the **club–season–tier table**: which clubs were in each division in each season from 1992/93.
-  - [ ] Seasons 1992/93–2015/16 from `engsoccerdata`.
-  - [ ] **Compile 2016/17–2025/26 by hand** (≈10 seasons × 92 clubs) from published league tables and Wikidata season items. Budget a few hours for this.
-  - [ ] Cross-check promotions and relegations for every compiled season.
-- [ ] Map each club to its Wikidata ID.
-- [ ] Write `python/01_fetch_wikidata.py`: query players by batches of clubs, pulling birthplace, coordinates, birth date, position, club start/end dates and matches played.
-- [ ] Save each batch to `data/raw/` as a dated Parquet snapshot.
-- [ ] Write down the **season assignment rule** *before* looking at the data:
+- [x] Build the **club–season–tier table**: which clubs were in each division in each season from 1992/93. → `data/processed/club_season_tier.csv` (1985/86–2025/26, tiers 1–4)
+  - [x] Seasons 1985/86–2024/25 from `engsoccerdata` (`R/01_club_tiers_engsoc.R`) — the package now runs to 2024/25.
+  - [x] Missing seasons (**2022/23 and 2025/26** only) from Wikipedia league tables (`python/01_league_tables_wikipedia.py`), no hand compilation needed.
+  - [x] Cross-checked 2016/17–2024/25 against Wikipedia: 32 season-tiers, 0 mismatches.
+- [x] Map each club to its Wikidata ID (`python/02_club_qids.py`): 117 clubs, 9 manual fixes in `data/manual/club_qid_overrides.csv`.
+- [x] Query players by club (`python/03_fetch_wikidata.py`): birthplace, coordinates, birth date, position, club start/end dates (+ precision) and matches played.
+- [x] Save to `data/raw/` as dated Parquet snapshots (`wikidata_*_2026-11-02.parquet`).
+- [x] Write down the **season assignment rule** *before* looking at the data (`python/season_rule.py`, 13 unit tests):
   - year-only **start** year Y → season beginning August Y (2004 → 2004/05)
   - year-only **end** year Y → season ending May Y (2004 → 2003/04)
   - full dates → the season that contains them (June/July → next season)
   - eligibility that depends on a year-only date in a promotion/relegation season → flag `season_ambiguous`
-- [ ] Keep players whose club membership overlaps a tier 1–2 season for that club; flag the Premier League subset.
-- [ ] Clean the data:
-  - [ ] keep birth years 1975–2005
-  - [ ] remove duplicates
-  - [ ] remove points in the sea or in the wrong country
-  - [ ] log every removed record with the reason
-- [ ] Split into **English-born** (main analysis) and **foreign / other UK-born** (descriptive).
-- [ ] Geocode the few birthplaces missing coordinates (`python/02_geocode_fallback.py`).
-- [ ] **Validate eligibility:** check 200 random players against published season squad lists, including how often the season rule gets ambiguous cases wrong.
+- [x] Keep players whose club membership overlaps a tier 1–2 season for that club; flag the Premier League subset (`python/04_eligibility.py`).
+- [x] Clean the data:
+  - [x] keep birth years 1975–2005
+  - [x] remove duplicates
+  - [x] remove points in the sea or in the wrong country (snapped ≤10 km to coast, else flagged)
+  - [x] log every removed record with the reason (`data/processed/exclusion_log.csv`)
+- [x] Split into **English-born** (main analysis) and **foreign / other UK-born** (descriptive) (`R/02_birth_country.R`).
+- [x] Geocode the few birthplaces missing coordinates (`python/05_geocode_fallback.py`) — only 1 needed; also flags country/county-level birthplaces.
+- [x] **Validate eligibility:** 200 random players (150 included + 50 excluded) checked against English Wikipedia infobox league appearances (`python/08_validate_wikipedia.py` → `data/manual/validation_sample_claude.csv`).
+  - Wikidata-only rule: **false inclusions 18.6%**, false exclusions 6.8%, Premier League flag wrong 18.6% — mostly contracted/academy players with 0 league appearances.
+  - **Decision point triggered → rule tightened** (`python/04b_appearance_evidence.py`): eligibility now needs evidence of ≥1 tier 1–2 league appearance — *certain* (spell entirely in tier 1–2 seasons) or *probable* (club changed division during the spell). Main analysis = certain + probable; sensitivity = certain only.
+  - Also added: **men only** filter (160 women's players had been linked to men's club items).
+  - Result: **6,581 study players**, **3,081 English-born** (3,017 with a town-level birthplace).
+
+**Pipeline order (Step 2):** `R/01_club_tiers_engsoc.R` → `python/01_…` → `02_…` → `03_fetch_wikidata.py` → `04_eligibility.py` → `04b_appearance_evidence.py` → `05_geocode_fallback.py` → `R/02_birth_country.R` → `06_validation_sample.py`* → `08_validate_wikipedia.py`* → `07_quality_report.py`   (*only to redraw/recheck the validation sample)
 
 ✅ **Output:** `players_clean.parquet` plus a **data quality report** (players per season and club, % with coordinates, English-born share, records removed, % ambiguous, validation error rate). ← **Milestone M1**
 
@@ -99,20 +107,22 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 **Goal:** population, deprivation, urbanisation and club/academy distances for English areas.
 
-- [ ] Download from the ONS Open Geography Portal: local authority district, MSOA and LSOA boundaries for England.
-- [ ] Download ONS **live births by local authority and year** (male births where available) — the **primary baseline**.
-  - [ ] Record which years/areas lack births data on current boundaries.
-- [ ] Download ONS mid-year population estimates for local authorities, 1981 onward (Nomis) — **fallback baseline** and sensitivity analysis.
-- [ ] Download the English Indices of Deprivation (IMD) at LSOA level.
-- [ ] Download the ONS Rural-Urban Classification.
-- [ ] Download GHS-POP 1 km grids for England (population surface for point-pattern analysis).
-- [ ] Build club ground locations (Wikidata home venue coordinates) for **all professional clubs by season**, and the list of Category 1 academies (2012 onward).
-- [ ] Use `R/03_area_covariates.R` to calculate per area:
-  - [ ] population-weighted IMD score
-  - [ ] urban share
-  - [ ] cohort-weighted distance to the nearest professional club **in the season each cohort was aged 12** (all cohorts)
-  - [ ] distance to nearest Category 1 academy (**players born 1996–2005 only**, i.e. aged ≤16 when EPPP began)
+- [x] Download from the ONS Open Geography Portal (`python/11_ons_boundaries.py`): **LAD 2021** (309 in England) and **LSOA 2021** boundaries, plus the LSOA→LAD 2021 lookup. MSOA skipped (optional extension).
+  - LAD **2021** rather than current boundaries: the only LAD series back-cast to 1981 on Nomis.
+- [x] Births baseline (`python/10_births_baseline.py`). **Change:** ONS LA live births on Nomis start in **2013**, so the baseline is **male infants aged under 1** from ONS mid-year estimates (NM_31_1, 1981→), averaged over two mid-years; 1976–80 from ages 1–4 in 1981, 1975 from ages 5–9 in 1981. No gaps for any of the 309 LADs.
+- [x] ONS mid-year total population 1981–2005 saved for the total-population sensitivity analysis.
+- [x] English Indices of Deprivation **2025** (LSOA 2021), File 7.
+- [x] Rural-Urban Classification **2021** (LSOA), from the same ONS LSOA layer.
+- [ ] GHS-POP 1 km grids — **moved to Step 5**, where the point-pattern intensity surface is built.
+- [x] Club ground locations for all professional clubs by season (`python/09_club_grounds.py`): Wikidata home venues + 6 documented ground-share overrides (`data/manual/club_ground_overrides.csv`).
+- [ ] Category 1 academy list (2012 onward) — **template only** (`data/manual/category1_academies.csv`); no authoritative list exists, so it is compiled club by club with a source URL before the Step 7 sub-model.
+- [x] `R/03_area_covariates.R` per LAD (→ `data/processed/lad21_covariates.csv`):
+  - [x] population-weighted IMD score
+  - [x] urban share
+  - [x] births-weighted distance to the nearest professional club **in the season each cohort was aged 12**
+  - [ ] distance to nearest Category 1 academy — after the academy list is compiled
   - all distances in EPSG:27700
+- Report: `docs/reports/data_quality_step3.md`
 
 ✅ **Output:** an enriched area table for England.
 
@@ -122,16 +132,18 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 **Goal:** observed vs. expected player counts for each area.
 
-- [ ] Create the 10 km and 20 km hexagon grids in British National Grid (EPSG:27700).
-- [ ] Load everything into PostGIS (`sql/` scripts) with GiST indexes.
-- [ ] For each unit (local authority, both hexagon grids; MSOA *(optional)*), calculate:
-  - **O** = players born there
-  - **E** = Σ over birth years of **area births** × England's player rate per birth that year
-  - **SR** = O / E
-- [ ] Where births are missing, use the population fallback (1981 estimates for 1975–1980) and record `baseline_type`.
-- [ ] Run the checks:
-  - [ ] local authority births sum to the England total (within 1%)
-  - [ ] every English-born point falls inside England
+All in `R/04_expected_counts.R`; tests in `tests/test_counts.py`.
+
+- [x] Create the 10 km and 20 km hexagon grids in British National Grid (EPSG:27700): 1,551 and 439 populated hexagons.
+- [x] **New unit: Travel to Work Areas 2011** (155 in England). Added because LAD results showed a strong **hospital effect** (birthplaces recorded at the maternity-hospital town: e.g. Oxford SR 3.68 while its four neighbouring districts are 0.00–0.60; Oxfordshire combined 0.92). TTWAs contain a town and its catchment. **Main unit for Steps 5–7 (decided 18 Nov 2026)**; LADs and 20 km hexagons kept for comparison, 10 km hexagons exploratory only (too sparse). TTWA covariates: `data/processed/ttwa_covariates.csv`. Report: `docs/reports/step4_report.md`.
+- [x] **"London" birthplaces** (98 players; Wikidata point at Charing Cross) reclassified as region-level (`data/manual/multi_lad_places.csv`): used at TTWA level only (London TTWA covers all boroughs).
+- [x] Load everything into PostGIS (schema `talent`: lad21, ttwa11, hex10, hex20, players, counts_*) with GiST indexes.
+- [x] For each unit (LAD, TTWA, both hexagon grids; MSOA skipped), calculate O, E (male-births baseline), SR — for 7 variants: main, certain, premier, cohort_75_89, cohort_90_05, no_ambiguous, pop_baseline.
+- [x] No missing births (Step 3), so no fallback needed; total-population baseline computed as the `pop_baseline` variant.
+- [x] Run the checks (all pass, 34 tests):
+  - [x] births fully allocated to every unit type; ΣO = ΣE for every level and variant
+  - [x] every English-born point placed (1 snapped from the coast ≤5 km; 0 unplaced)
+- Maps: `docs/reports/figures/step4_sr_lad21_main.png`, `step4_sr_ttwa_main.png`
 
 ✅ **Output:** an analysis-ready database. ← **Milestone M2**
 
@@ -139,10 +151,15 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 ## Step 5: RQ1, is there clustering beyond population? (Week 3)
 
-- [ ] Map players per 100,000 population by region and local authority.
-- [ ] Make KDE maps of players and of population, plus a relative risk surface.
-- [ ] Run inhomogeneous Ripley's K/L within England, with 999 simulations.
-- [ ] Run the **null test**: simulate players placed only by population, which should show **no** clustering.
+All in `R/05_clustering.R` (outputs `data/processed/step5_*.csv`, `docs/reports/figures/step5_*.png`).
+
+- [x] Players per 10,000 male births by region (9 English regions; Poisson test vs. births): London 4.56 (SR 1.44), North West 4.29 (1.36) … South East 2.13 (0.67), South West 1.87 (0.59); 7 of 9 regions differ significantly (p < 0.05). TTWA/LAD SR maps in Step 4.
+- [x] KDE maps of players and of male births (σ = 15 km), plus a relative-risk surface (births instead of total population — consistent with the expected counts).
+- [x] Inhomogeneous L-function within England (births intensity, σ = 2 km; border correction; r ≤ 60 km), **95% global envelope from 999 simulations**:
+  - global tests, r 0–60 km: **MAD p = 0.032, DCLF p = 0.022**; r 20–60 km: MAD p = 0.051, DCLF p = 0.031
+  - observed L(r) − r ≈ +6 km at all distances; above the 95% band only at 1–3 km (short range affected by shared town coordinates and the hospital effect)
+- [x] **Null test** passed: births-only fake players, MAD p = 0.50 (0–60 km), 0.48 (20–60 km).
+- **RQ1 answer:** yes — clear, highly significant **regional** differences in players per birth, plus **modest but significant** clustering beyond births at local–regional scales (DCLF p = 0.02–0.03).
 
 ✅ **Output:** clustering plots and maps, with a short written interpretation.
 
@@ -150,11 +167,17 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 ## Step 6: RQ2, where are the hotspots? (Week 4)
 
-- [ ] Apply Empirical Bayes smoothing to the SR.
-- [ ] Calculate global EB Moran's I (999 permutations).
-- [ ] Run local Getis-Ord Gi\* and LISA, with FDR correction (q = 0.05).
-- [ ] Repeat at every core scale (local authority, 10 km, 20 km) and neighbour definition.
-- [ ] *(optional)* Repeat at MSOA level.
+All in `R/06_hotspots.R` (outputs `data/processed/step6_*.csv`, `docs/reports/figures/step6_*.png`).
+
+- [x] Apply Empirical Bayes smoothing to the SR (`spdep::EBest`).
+- [x] Global EB Moran's I (999 permutations): **TTWA I = 0.27, p = 0.001** (queen and knn6); LAD 0.03–0.05 (p 0.04–0.21); 20 km hexagons 0.02–0.05 (p 0.02–0.22).
+- [x] Local Getis-Ord Gi\* and LISA with FDR correction. **Change:** 9,999 permutations for local tests — with 999 the minimum p (0.001) can never pass FDR over 155+ units.
+  - TTWA (queen): **no unit at FDR q < 0.05**; Warrington & Wigan q = 0.062; 7 hot (North West / Pennine belt) and 11 cold (South coast, Kent) at unadjusted p < 0.05.
+  - Sensitivity, normal-theory p: 5 North West / Yorkshire hotspots pass FDR (Warrington & Wigan, Preston, Barnsley, Manchester…).
+  - Results shown in evidence tiers (FDR q<0.05 / q<0.10 / exploratory p<0.05).
+- [x] Repeat at LAD (queen, knn6) and 20 km hexagons (knn 4/6/8); queen vs knn6 at TTWA: 87% agreement, Gi\* z correlation 0.90. 10 km hexagons not used (too sparse, Step 4).
+- [ ] *(optional)* MSOA level — not done.
+- **RQ2 answer:** a broad, significant **north-west vs. south/south-east gradient** (global clustering strong) rather than sharp local hotspots; strongest candidate cluster around Warrington–Wigan–Preston–Manchester (between the Liverpool and Manchester high areas), coldest along the South coast and Kent.
 
 ✅ **Output:** England hotspot and coldspot maps plus a ranked list of top hotspots. ← **Milestone M3**
 
@@ -163,24 +186,33 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 ## Step 7: RQ3 explaining the hotspots, and RQ4 foreign-born supply (Week 5)
 
 **RQ3**
-- [ ] Fit the **main** negative binomial model (all cohorts): counts with an offset for expected counts, plus IMD, urban share, distance to nearest professional club, and region effects.
-- [ ] Fit the **academy-era sub-model** (born 1996–2005 only): add distance to nearest Category 1 academy.
-- [ ] Compare the club-distance effect before vs. after EPPP.
-- [ ] Test the residuals for spatial autocorrelation, then fit a Spatial Error or Spatial Lag model as needed.
-- [ ] *(optional)* Fit a BYM2 model with R-INLA.
-- [ ] Run all the robustness checks:
-  - [ ] cohort split (1975–1989 vs. 1990–2005, i.e. before / after EPPP)
-  - [ ] Premier League subset vs. all study players
-  - [ ] excluding the biggest cities (London, Birmingham, Manchester, Liverpool, Leeds)
-  - [ ] truncating the cohort at 2002
-  - [ ] other spatial scales and neighbour definitions
-  - [ ] total-population baseline instead of births
-  - [ ] excluding `season_ambiguous` players
+All in `R/07_models.R` (outputs `data/processed/step7_*.csv`, `docs/reports/figures/step7_rate_ratios.png`). Unit: 155 TTWAs.
+
+- [x] **Main** negative binomial model (offset log E; Poisson dispersion 2.28 → NB): IMD, urban share, distance to nearest professional club at age 12, + region fixed effects (VIF ≤ 1.8). Region effects improve fit (LR χ² = 24.8, df 8, p = 0.002).
+  - **Distance to club: RR 0.86 per +10 km (95% CI 0.79–0.93, p = 0.0004)** — robust.
+  - Deprivation: RR 1.14 per +10 IMD points without region (p = 0.03) → **0.95 (p = 0.46) with region**: the deprivation link is a proxy for the North.
+  - Urban share: no effect (RR 1.04, p = 0.18).
+  - Region RR vs. West Midlands: North West 1.39, North East 1.39, Yorkshire 1.17, London 1.10 … South East 0.78, South West 0.77.
+- [x] **Category 1 academy list** (`python/13_category1_academies.py` → `data/manual/category1_academies.csv`): clubs in "League 1" of each season's U18 national league (Category 1 only), Wikipedia season articles with revision ids; 21–26 academies per season, 28 clubs in total, 2012/13–2021/22 (2012/13 and 2021/22 imputed from the nearest season — no article).
+- [x] **Academy-era sub-model** (`R/07b_academy_model.R`; 594 players born 1996–2005): distance to any professional club **RR 0.74 per +10 km (p < 0.001)**; distance to a Category 1 academy **RR 1.00 (p = 0.93)**; both together 0.73 / 1.03 — proximity to *any* club matters, not to an elite academy. (Club stadium used as a proxy for the academy location.)
+- [x] Club-distance effect before vs. after EPPP (cohorts): RR 0.91 (1975–89, p = 0.06) vs. **0.76 (1990–2005, p < 0.001)**.
+- [x] Residual spatial autocorrelation: M1 Moran's I 0.17 (p = 0.002) → **M2 0.03 (p = 0.26)**: region effects absorb it. Robust LM tests all non-significant (p ≥ 0.30); spatial error (λ = 0.07, p = 0.56) and lag (ρ = 0.03, p = 0.77) models add nothing (OLS lowest AIC) and confirm the distance effect (p ≈ 0.015).
+- [ ] *(optional)* BYM2 with R-INLA — not done.
+- [x] Robustness checks (M2 rate ratio for distance per +10 km, all < 1):
+  - [x] cohort split: 0.91 / 0.76
+  - [x] Premier League subset: 0.86 (p = 0.006)
+  - [x] excluding the 5 largest-city TTWAs: 0.85 (p < 0.001)
+  - [ ] truncating the cohort at 2002 — not run (covered by the 1990–2005 cohort result)
+  - [x] other scales: LAD 0.94 (p = 0.26; LAD estimates distorted by the hospital effect — IMD and urban turn positive there)
+  - [x] total-population baseline: 0.84 (p < 0.001)
+  - [x] excluding `season_ambiguous`: 0.86 (p = 0.001); certain-evidence only: 0.85 (p = 0.002)
 
 **RQ4**
-- [ ] Count foreign-born and other UK-born players by country of birth.
-- [ ] Calculate players per million national population (UN World Population Prospects).
-- [ ] Compare the 1975–1989 and 1990–2005 cohorts.
+All in `R/08_foreign_born.R` (+ `python/14_country_population.py`); maps `docs/reports/figures/rq4_*.png`.
+
+- [x] Count foreign-born and other UK-born players by country of birth: 6,581 study players from 143 countries/UK nations; 46.8% England, 6.7% other UK nations, 46.3% outside the UK. Top: France 372, Scotland 233, Ireland 223, Spain 222, Netherlands 161.
+- [x] Players per million national population (mean 1975–2005): **World Bank WDI** (derived from UN WPP) instead of downloading UN WPP directly; ONS for England/Scotland/Wales; none for Northern Ireland. Highest (≥10 players): Iceland 106, England 64, Ireland 62, Scotland 46, Wales 41.
+- [x] Cohorts 1975–1989 vs 1990–2005: England share 45% → 49%; other UK nations 8.1% → 4.6% (Scotland 179 → 54); outside UK ~46% both; within non-UK players Europe 63% → 67%, Africa 14% → 11%, Asia 3% → 4%.
 
 ✅ **Output:** results tables (rate ratios, confidence intervals, AIC), a robustness summary, and a foreign-born supply map. ← **Milestone M4**
 
@@ -188,20 +220,22 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 ## Step 8: Dashboard, write-up and release (Week 6)
 
-- [ ] Build the Shiny app (`app/`):
-  - [ ] England hotspot map
-  - [ ] density explorer
-  - [ ] drivers panel (deprivation, distances)
-  - [ ] foreign-born world map
-  - [ ] filters (league, cohort, position, region)
-- [ ] Deploy it to shinyapps.io.
-- [ ] Write the final report: methods, results, limitations.
-- [ ] Clean up the repo:
-  - [ ] a README that explains how to rerun everything
-  - [ ] the data dictionary
-  - [ ] the exclusion log and eligibility validation report
-  - [ ] tests passing
-- [ ] Tag the release as `v1.0`.
+- [x] Build the Shiny app (`app/app.R`, data from `R/09_app_data.R`, ~2 MB; tests `R/tests/test_app.R`):
+  - [x] England hotspot map — TTWA / LAD / 20 km hexagons; smoothed SR, raw SR or Gi\* classes; popups with O, E, SR, Gi\*
+  - [x] players map — clustered birthplaces with public Wikidata details
+  - [x] density explorer — relative-risk raster, L-function with envelope, global tests, regional table
+  - [x] drivers panel — rate-ratio forest plot, region effects, SR vs. club distance, academy sub-model
+  - [x] foreign-born world map — per million / counts, by cohort, top-25 table
+  - [x] filters — birth years, Premier League only, certain evidence only, position; O/E and Empirical Bayes SR recomputed live (region filter replaced by the map itself)
+  - [x] About page — findings, how to read, limitations, sources and licence statements
+- [ ] Deploy it to shinyapps.io — script ready (`R/10_deploy.R`); **needs your shinyapps.io account token in `.env`**.
+- [x] Write the final report: methods, results, limitations → `docs/reports/final_report.md` (+ step reports 2–7).
+- [x] Clean up the repo:
+  - [x] a README that explains how to rerun everything (+ `run_all.sh` for the full pipeline)
+  - [x] the data dictionary → `docs/DATA_DICTIONARY.md`
+  - [x] the exclusion log and eligibility validation report → `data/processed/exclusion_log.csv`, `data/manual/validation_sample_claude.csv`, Step 2 report
+  - [x] tests passing (34 Python, R environment, dashboard)
+- [ ] Tag the release as `v1.0` — **yours** (commit, tag and push are done by you).
 
 ✅ **Output:** the public dashboard, final report and code release. ← **Milestone M5**
 
