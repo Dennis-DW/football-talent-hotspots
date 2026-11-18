@@ -1,0 +1,119 @@
+engsoc_name,club_qid,first_season,last_season,method
+AFC Bournemouth,Q19568,,,wikipedia_table
+AFC Wimbledon,Q48851,,,wikipedia_table
+Accrington,Q48843,,,manual
+Aldershot,Q2300305,1985,1991,manual
+Aldershot,Q48862,2008,2024,manual
+Arsenal,Q9617,,,wikipedia_table
+Aston Villa,Q18711,,,wikipedia_table
+Barnet,Q9408,,,wikipedia_table
+Barnsley,Q19442,,,wikipedia_table
+Barrow,Q18507,,,wikipedia_table
+Birmingham City,Q19444,,,wikipedia_table
+Blackburn Rovers,Q19446,,,wikipedia_table
+Blackpool,Q19449,,,wikipedia_table
+Bolton Wanderers,Q19451,,,wikipedia_table
+Boston United,Q894605,,,title_guess:Boston United F.C.
+Bradford City,Q48879,,,wikipedia_table
+Brentford,Q19571,,,wikipedia_table
+Brighton & Hove Albion,Q19453,,,wikipedia_table
+Bristol City,Q19456,,,wikipedia_table
+Bristol Rovers,Q48925,,,wikipedia_table
+Bromley,Q1584552,,,wikipedia_table
+Burnley,Q19458,,,wikipedia_table
+Burton Albion,Q48929,,,wikipedia_table
+Bury,Q19573,,,wikipedia_table
+Cambridge United,Q18509,,,wikipedia_table
+Cardiff City,Q18662,,,wikipedia_table
+Carlisle United,Q19575,,,wikipedia_table
+Charlton Athletic,Q19462,,,wikipedia_table
+Chelsea,Q9616,,,wikipedia_table
+Cheltenham,Q48932,,,manual
+Chester,Q1070732,,,manual
+Chesterfield,Q48935,,,wikipedia_table
+Colchester United,Q19578,,,wikipedia_table
+Coventry City,Q19580,,,wikipedia_table
+Crawley Town,Q19584,,,wikipedia_table
+Crewe Alexandra,Q19587,,,wikipedia_table
+Crystal Palace,Q19467,,,wikipedia_table
+Dagenham and Redbridge,Q48938,,,title_guess:Dagenham and Redbridge F.C.
+Darlington,Q909189,,,title_guess:Darlington F.C.
+Derby County,Q19470,,,wikipedia_table
+Doncaster Rovers,Q19589,,,wikipedia_table
+Everton,Q5794,,,wikipedia_table
+Exeter City,Q48939,,,wikipedia_table
+Fleetwood Town,Q48941,,,wikipedia_table
+Forest Green Rovers,Q18512,,,wikipedia_table
+Fulham,Q18708,,,wikipedia_table
+Gillingham,Q48943,,,wikipedia_table
+Grimsby Town,Q18515,,,wikipedia_table
+Halifax Town,Q5214935,,,title_guess:Halifax Town F.C.
+Harrogate Town A.F.C.,Q2219286,,,wikipedia_table
+Hartlepool United,Q19592,,,wikipedia_table
+Hereford United,Q18516,,,title_guess:Hereford United F.C.
+Huddersfield Town,Q19473,,,wikipedia_table
+Hull City,Q19477,,,wikipedia_table
+Ipswich Town,Q9653,,,wikipedia_table
+Kidderminster Harriers,Q18518,,,title_guess:Kidderminster Harriers F.C.
+Leeds United,Q1128631,,,wikipedia_table
+Leicester City,Q19481,,,wikipedia_table
+Leyton Orient,Q19595,,,wikipedia_table
+Lincoln City,Q18519,,,wikipedia_table
+Liverpool,Q1130849,,,wikipedia_table
+Luton Town,Q18520,,,wikipedia_table
+Macclesfield,Q18521,,,manual
+Maidstone United,Q16844365,,,manual
+Manchester City,Q50602,,,wikipedia_table
+Manchester United,Q18656,,,wikipedia_table
+Mansfield Town,Q18522,,,wikipedia_table
+Middlesbrough,Q18661,,,wikipedia_table
+Millwall,Q19487,,,wikipedia_table
+Milton Keynes Dons,Q248188,,,wikipedia_table
+Morecambe,Q48944,,,wikipedia_table
+Newcastle United,Q18716,,,wikipedia_table
+Newport County,Q18523,,,wikipedia_table
+Northampton Town,Q48945,,,wikipedia_table
+Norwich City,Q18721,,,wikipedia_table
+Nottingham Forest,Q19490,,,wikipedia_table
+Notts County,Q19598,,,wikipedia_table
+Oldham Athletic,Q19601,,,wikipedia_table
+Oxford United,Q48946,,,wikipedia_table
+Peterborough United,Q19495,,,wikipedia_table
+Plymouth Argyle,Q48947,,,wikipedia_table
+Port Vale,Q48948,,,wikipedia_table
+Portsmouth,Q19604,,,wikipedia_table
+Preston North End,Q19612,,,wikipedia_table
+Queens Park Rangers,Q18723,,,wikipedia_table
+Reading,Q18729,,,wikipedia_table
+Rochdale,Q48949,,,wikipedia_table
+Rotherham United,Q48950,,,wikipedia_table
+Rushden & Diamonds,Q1138515,,,title_guess:Rushden & Diamonds F.C.
+Salford City,Q18460,,,wikipedia_table
+Scarborough,Q1237961,,,title_guess:Scarborough F.C.
+Scunthorpe United,Q19615,,,wikipedia_table
+Sheffield United,Q19607,,,wikipedia_table
+Sheffield Wednesday,Q19498,,,wikipedia_table
+Shrewsbury Town,Q19626,,,wikipedia_table
+Southampton,Q18732,,,wikipedia_table
+Southend United,Q48951,,,wikipedia_table
+Stevenage Borough,Q9426,,,title_guess:Stevenage Borough F.C.
+Stockport County,Q18526,,,wikipedia_table
+Stoke City,Q18736,,,wikipedia_table
+Sunderland,Q18739,,,wikipedia_table
+Sutton United,Q2454929,,,wikipedia_table
+Swansea City,Q18659,,,wikipedia_table
+Swindon Town,Q19634,,,wikipedia_table
+Torquay United,Q47965,,,title_guess:Torquay United F.C.
+Tottenham Hotspur,Q18741,,,wikipedia_table
+Tranmere Rovers,Q19637,,,wikipedia_table
+Walsall,Q19644,,,wikipedia_table
+Watford,Q2714,,,wikipedia_table
+West Bromwich Albion,Q18744,,,wikipedia_table
+West Ham United,Q18747,,,wikipedia_table
+Wigan Athletic,Q18750,,,wikipedia_table
+Wimbledon,Q19482,,,manual
+Wolverhampton Wanderers,Q19500,,,wikipedia_table
+Wrexham,Q18529,,,wikipedia_table
+Wycombe Wanderers,Q48953,,,wikipedia_table
+Yeovil,Q19651,,,manual
+York City,Q48954,,,title_guess:York City F.C.
