@@ -12,6 +12,22 @@
 <meta property="og:description" content="Players are {{regionRatio}}× as common per birth in London as in the South West, and each extra 10 km to a professional club means {{distPct}}% fewer. Research paper, code and dashboard.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://dennis-dw.github.io/football-talent-hotspots/">
+<!-- Google Scholar (Highwire Press) tags: https://scholar.google.com/intl/en/scholar/inclusion.html -->
+<meta name="citation_doi" content="10.5281/zenodo.24512597">
+<meta name="DC.identifier" content="doi:10.5281/zenodo.24512597">
+<meta name="citation_title" content="Where Do England's Footballers Come From? Spatial Clustering of the Birthplaces of Premier League and Championship Players Born 1975–2005">
+<meta name="citation_author" content="Wambua, Dennis">
+<meta name="citation_author_institution" content="Independent Researcher">
+<meta name="citation_publication_date" content="2026/11/19">
+<meta name="citation_language" content="en">
+<meta name="citation_pdf_url" content="https://dennis-dw.github.io/football-talent-hotspots/paper.pdf">
+<meta name="citation_abstract_html_url" content="https://dennis-dw.github.io/football-talent-hotspots/">
+<meta name="citation_keywords" content="spatial epidemiology; football; talent identification; birthplace effect; Getis-Ord; Moran's I; negative binomial; England">
+<meta name="DC.title" content="Where Do England's Footballers Come From? Spatial Clustering of the Birthplaces of Premier League and Championship Players Born 1975–2005">
+<meta name="DC.creator" content="Wambua, Dennis">
+<meta name="DC.date" content="2026-11-19">
+<meta name="DC.type" content="Text.Preprint">
+<link rel="canonical" href="https://dennis-dw.github.io/football-talent-hotspots/">
 <meta property="og:image" content="https://dennis-dw.github.io/football-talent-hotspots/figures/fig_hospital.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,6 +77,8 @@ tbody tr:last-child td{border-bottom:2px solid var(--ink)}
 td.b{font-weight:600}
 table.left th,table.left td{text-align:left;padding-left:0;padding-right:16px}
 table.left th:not(:first-child),table.left td:not(:first-child){padding-left:12px}
+details.abs summary{cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:500;color:var(--accent)}
+details.abs[open] summary{margin-bottom:14px}
 .table-note{margin:16px 0 0;font-family:var(--sans);font-size:13px;line-height:1.6;color:var(--ink3);text-wrap:pretty}
 .finding{display:flex;gap:20px;padding:24px 0;border-top:1px solid var(--rule2)}
 .finding:first-child{padding-top:0;border-top:none}
@@ -101,7 +119,7 @@ footer p:first-child{font-weight:500;color:var(--ink)}
 
 <h1>Where do England&rsquo;s footballers come from?<small>Spatial clustering of the birthplaces of Premier League and Championship players born 1975&ndash;2005</small></h1>
 
-<div class="authors"><div><div class="author-name">Dennis Wambua</div><div class="author-meta">Independent researcher</div></div></div>
+<div class="authors"><div><div class="author-name">Dennis Wambua</div><div class="author-meta">Independent researcher &middot; DOI <a href="https://doi.org/10.5281/zenodo.24512597" target="_blank" rel="noopener">10.5281/zenodo.24512597</a></div></div></div>
 
 <div class="actions">
 <a class="btn" href="paper.pdf" target="_blank" rel="noopener">Download the paper (PDF)&nbsp;&darr;</a>
@@ -119,6 +137,8 @@ footer p:first-child{font-weight:500;color:var(--ink)}
 
 <div class="row first"><div class="label accent" style="padding-top:7px">Key finding</div><div class="body"><p class="lead">Players are not born in proportion to births. A belt from Merseyside and Lancashire across to South Yorkshire produces the most players per boy born, and the south coast the fewest. Within regions, boys born closer to any professional club were more likely to reach the top two divisions. Deprivation and urbanisation do not explain the differences once region is included, and nor does distance to an elite Category&nbsp;1 academy.</p><p class="table-note">Associations between areas, not causes. Full methods, results and limitations are in the paper; every map and table can be explored in the dashboard.</p></div></div>
 
+<div class="row tight"><div class="label">Abstract</div><div class="body"><details class="abs"><summary>Read the abstract</summary><p class="abstract">English football spends heavily on finding young players, yet it is not known whether the players who reach the top two divisions are born across England in proportion to births or in particular places. We ask where English-born men who played in the Premier League or the Championship were born, compared with where boys were born. From Wikidata and Wikipedia we identify {{nStudy}} men born 1975&ndash;2005 with evidence of a league appearance at one of {{nClubsTopTwo}} top-two clubs since 1992; {{nEnglish}} were born in England and {{nMapped}} can be placed on a map. Expected counts come from {{birthsTotal}} million male births estimated from ONS mid-year populations. Players are {{regionRatio}} times as common per birth in London ({{londonRate}} per 10,000 male births) as in the South West ({{swRate}}), and {{nRegionsSig}} of 9 regions differ from England at p &lt; 0.05. Within regions, birthplaces are more clustered than births at distances up to 60&nbsp;km (inhomogeneous L-function, DCLF {{lDCLFall|p}}; births-only null {{lNullAll|p}}). Across Travel to Work Areas (TTWAs) the Empirical Bayes Moran&rsquo;s I is {{moranTTWA}} ({{moranTTWAp|p}}), with high values in a belt from Merseyside and Lancashire across to South Yorkshire and low values along the south coast, but only one area ({{giTopName}}, q = {{giTopQ}}) comes close to passing a false discovery rate correction. In a negative binomial model with region effects, each extra 10&nbsp;km to the nearest professional club lowers the rate by {{distPct}}% (rate ratio {{distRR}}, 95% CI {{distLo}}&ndash;{{distHi}}, {{distP|p}}), while deprivation and urban share have no effect once region is included. For the {{nAcadPlayers}} players born 1996&ndash;2005, who were of academy age after the 2012 academy reform, distance to any club matters (rate ratio {{clubYoungRR}}) and distance to an elite Category 1 academy does not ({{acadRR}}, {{acadP|p}}). Of all {{nStudy}} study players, {{shareOutsideEngland}}% were born outside England, mostly in Western Europe and the other UK nations. Of the stated hypotheses, H0 (births alone explain the pattern) is rejected, H1 (individual hotspots and coldspots) is supported for the overall pattern but only weakly for named areas, and H2 (association with deprivation, urbanisation and proximity to clubs and academies) is supported for club proximity only. The results describe areas, not individuals.</p></details></div></div>
+
 <div class="figs" id="figures"><div class="label">Key figures</div>
 <div class="pair">
 <figure><img src="figures/fig_ttwa_sr.png" alt="Map of England's Travel to Work Areas coloured by the smoothed ratio of players to expected players. Red areas, with more players than births predict, form a belt from Merseyside to South Yorkshire and include London; blue areas run along the south coast and through the rural South West and East Anglia." loading="lazy"><figcaption><b>Figure 1</b><span>Empirical Bayes-smoothed standardised ratio by Travel to Work Area. Red: more players than births predict; blue: fewer.</span></figcaption></figure>
@@ -131,6 +151,7 @@ footer p:first-child{font-weight:500;color:var(--ink)}
 
 <div class="row"><div class="label">Links</div><div class="body"><div class="links">
 <a href="paper.pdf" target="_blank" rel="noopener"><span>Research paper (PDF)&nbsp;<i>&darr;</i></span><span>paper.pdf</span></a>
+<a href="https://doi.org/10.5281/zenodo.24512597" target="_blank" rel="noopener"><span>Archived on Zenodo&nbsp;<i>&nearr;</i></span><span>doi.org/10.5281/zenodo.24512597</span></a>
 <a href="https://denniswambua.shinyapps.io/football-talent-hotspots/" target="_blank" rel="noopener"><span>Interactive dashboard&nbsp;<i>&nearr;</i></span><span>denniswambua.shinyapps.io/football-talent-hotspots</span></a>
 <a href="https://github.com/Dennis-DW/football-talent-hotspots" target="_blank" rel="noopener"><span>Source code&nbsp;<i>&nearr;</i></span><span>github.com/Dennis-DW/football-talent-hotspots</span></a>
 </div></div></div>

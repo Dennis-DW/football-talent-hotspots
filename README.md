@@ -22,7 +22,7 @@ t](docs/reports/final_report.md)**.
 | Document | What it is |
 |---|---|
 | [Project page](https://dennis-dw.github.io/football-talent-hotspots/) | One-page summary with the key numbers, figures and links (`site/`) |
-| [Research paper (PDF)](paper/main.pdf) | Final paper: data, methods, results for RQ1–RQ4, limitations, reproducibility |
+| [Research paper (PDF)](paper/main.pdf) · DOI [10.5281/zenodo.24512597](https://doi.org/10.5281/zenodo.24512597) | Final paper: data, methods, results for RQ1–RQ4, limitations, reproducibility |
 | [Final report](docs/reports/final_report.md) | Findings, methods, limitations, changes from the proposal |
 | Step reports: [2](docs/reports/step2_report.md) · [3](docs/reports/step3_report.md) · [4](docs/reports/step4_report.md) · [5](docs/reports/step5_report.md) · [6](docs/reports/step6_report.md) · [7](docs/reports/step7_report.md) | Detailed process, challenges and decisions for each step |
 | [Data quality: Step 2](docs/reports/data_quality_step2.md) · [Step 3](docs/reports/data_quality_step3.md) | Generated data quality reports |
