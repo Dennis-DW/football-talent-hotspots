@@ -9,6 +9,9 @@ data/processed/*
 *.parquet
 *.zip
 
+docs/AGENT_PROMPT.md
+docs/DEPLOY.md
+
 # Secrets
 .env
 

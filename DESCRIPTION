@@ -20,5 +20,8 @@ Imports:
     engsoccerdata,
     shiny,
     leaflet,
+    reactable,
+    bsicons,
+    bslib,
     here,
     testthat

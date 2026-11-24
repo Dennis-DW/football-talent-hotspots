@@ -11,9 +11,12 @@ RUN apt-get update \
 # Additional R packages (already-installed ones are skipped)
 RUN install2.r --error --skipinstalled -n -1 \
       spatstat spdep spatialreg MASS tidyverse DBI RPostgres arrow \
-      testthat shiny leaflet renv remotes here \
+      testthat shiny leaflet renv remotes here reactable bsicons rsconnect \
  && Rscript -e 'remotes::install_github("jalapic/engsoccerdata@872c5c354161ace8408f3091b758c6af4cccca94", upgrade = "never")' \
  && rm -rf /tmp/downloaded_packages
+
+# LaTeX packages for the research paper (paper/)
+RUN tlmgr install preprint titlesec adjustbox placeins enumitem booktabs caption collectbox amsfonts lm
 
 # Python in an isolated virtual environment
 COPY requirements.txt /tmp/requirements.txt

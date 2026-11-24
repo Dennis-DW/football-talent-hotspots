@@ -14,12 +14,15 @@ Author: **Dennis Wambua**
 4. **Deprivation and urbanisation don't explain the pattern** once region is taken into account.
 5. **About half the players were born outside England.** Ireland, Scotland, Wales and Iceland supply the most per head.
 
-Full write-up: **[Final report](docs/reports/final_report.md)**.
+Full write-up: **[Final repor
+t](docs/reports/final_report.md)**.
 
 ## Documents
 
 | Document | What it is |
 |---|---|
+| [Project page](https://dennis-dw.github.io/football-talent-hotspots/) | One-page summary with the key numbers, figures and links (`site/`) |
+| [Research paper (PDF)](paper/main.pdf) | Final paper: data, methods, results for RQ1–RQ4, limitations, reproducibility |
 | [Final report](docs/reports/final_report.md) | Findings, methods, limitations, changes from the proposal |
 | Step reports: [2](docs/reports/step2_report.md) · [3](docs/reports/step3_report.md) · [4](docs/reports/step4_report.md) · [5](docs/reports/step5_report.md) · [6](docs/reports/step6_report.md) · [7](docs/reports/step7_report.md) | Detailed process, challenges and decisions for each step |
 | [Data quality: Step 2](docs/reports/data_quality_step2.md) · [Step 3](docs/reports/data_quality_step3.md) | Generated data quality reports |
@@ -27,6 +30,7 @@ Full write-up: **[Final report](docs/reports/final_report.md)**.
 | [Work plan](docs/WORKPLAN.md) | Task checklist with results and decisions |
 | [Statistical methods guide](docs/STATISTICAL_METHODS.md) | Plain-language explanation of every method |
 | [Data dictionary](docs/DATA_DICTIONARY.md) | Variables in the output files |
+| [Deployment guide](docs/DEPLOY.md) | Publishing the dashboard to shinyapps.io |
 
 ## Dashboard
 
@@ -38,7 +42,7 @@ docker compose exec app Rscript -e 'shiny::runApp("app", host = "0.0.0.0", port 
 # open http://localhost:3838
 ```
 
-Deploying to shinyapps.io: add your account token to `.env` (see `.env.example`), then `docker compose exec app Rscript R/10_deploy.R`.
+Deploying to shinyapps.io: see [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Running the project
 
@@ -61,20 +65,33 @@ docker compose exec app bash run_all.sh    # ~1–1.5 hours, needs internet acce
 
 | Step | Scripts | Output |
 |---|---|---|
-| 2 Players & eligibility | `R/01_club_tiers_engsoc.R`, `python/01`–`05`, `04b`, `R/02_birth_country.R`, `python/07` | `players_eligible.parquet`, exclusion log, quality report |
-| 2 Validation | `python/06_validation_sample.py`, `python/08_validate_wikipedia.py` | 200-player validation |
-| 3 Area data | `python/09`–`12`, `R/03_area_covariates.R` | births, IMD, urban share, club distance |
-| 4 Expected counts | `R/04_expected_counts.R` | O, E, SR for 4 unit types × 7 variants; PostGIS |
-| 5 Clustering (RQ1) | `R/05_clustering.R` | L-function, regional table, maps |
-| 6 Hotspots (RQ2) | `R/06_hotspots.R` | EB Moran's I, Gi\*, LISA, maps |
-| 7 Models (RQ3) & foreign-born (RQ4) | `R/07_models.R`, `python/13`–`14`, `R/07b_academy_model.R`, `R/08_foreign_born.R` | rate ratios, robustness, academy model, world map |
-| 8 Dashboard | `R/09_app_data.R`, `app/app.R`, `R/10_deploy.R` | Shiny app |
+| 2 Players & eligibility | `analysis/prepare/01_club_tiers_engsoc.R`, `pipeline/clubs/01`–`02`, `pipeline/players/03`–`05`, `04b`, `analysis/prepare/02_birth_country.R`, `pipeline/reports/07` | `players_eligible.parquet`, exclusion log, quality report |
+| 2 Validation | `pipeline/validation/06_validation_sample.py`, `pipeline/validation/08_validate_wikipedia.py` | 200-player validation |
+| 3 Area data | `pipeline/clubs/09`, `pipeline/areas/10`–`11`, `pipeline/reports/12`, `analysis/prepare/03_area_covariates.R` | births, IMD, urban share, club distance |
+| 4 Expected counts | `analysis/prepare/04_expected_counts.R` | O, E, SR for 4 unit types × 7 variants; PostGIS |
+| 5 Clustering (RQ1) | `analysis/models/05_clustering.R` | L-function, regional table, maps |
+| 6 Hotspots (RQ2) | `analysis/models/06_hotspots.R` | EB Moran's I, Gi\*, LISA, maps |
+| 7 Models (RQ3) & foreign-born (RQ4) | `analysis/models/07_models.R`, `pipeline/clubs/13`, `pipeline/countries/14`, `analysis/models/07b_academy_model.R`, `analysis/models/08_foreign_born.R` | rate ratios, robustness, academy model, world map |
+| 8 Dashboard | `analysis/dashboard/09_app_data.R`, `app/app.R`, `analysis/dashboard/10_deploy.R` | Shiny app |
+| 9 Paper | `analysis/paper/11_paper_inputs.R`, `paper/build.sh` | `paper/main.pdf` |
+| 10 Project page | `analysis/site/12_build_site.R` (template `analysis/site/template.html`) | `site/`, published by GitHub Pages |
+
+### Research paper
+```bash
+bash paper/build.sh              # from the host: regenerate numbers, tables and figures, then compile
+bash paper/build.sh --tex-only   # compile only
+python paper/verify_refs.py      # re-check every reference against Crossref
+```
+The paper's numbers (`paper/generated/numbers.tex`), tables and figures are generated from the cached outputs in `data/processed/`; don't edit them by hand.
+
+### Project page
+`bash paper/build.sh` also rebuilds `site/`: `analysis/site/12_build_site.R` fills `analysis/site/template.html` with the paper's numbers (`paper/generated/numbers.tex`) and copies the paper PDF and figures. Commit and push `site/`; `.github/workflows/pages.yml` publishes it to https://dennis-dw.github.io/football-talent-hotspots/. One-time setup: repository **Settings → Pages → Source: GitHub Actions**.
 
 ### Tests
 ```bash
 docker compose exec app pytest tests/                      # season rule, count integrity (34 tests)
-docker compose exec app Rscript R/tests/test_environment.R # packages, CRS round-trip, PostGIS
-docker compose exec app Rscript R/tests/test_app.R         # every dashboard output renders
+docker compose exec app Rscript analysis/tests/test_environment.R # packages, CRS round-trip, PostGIS
+docker compose exec app Rscript analysis/tests/test_app.R         # every dashboard output renders
 ```
 
 ### Database
@@ -84,23 +101,6 @@ docker compose exec app Rscript R/tests/test_app.R         # every dashboard out
 | Your own machine | `localhost` | `5433` |
 
 Schema `talent`: `lad21`, `ttwa11`, `hex10`, `hex20`, `players`, `counts_*` (GiST-indexed).
-
-## Repository structure
-```
-├── .devcontainer/     Dev container (R 4.5.1 + spatial libraries, Python venv)
-├── app/               Shiny dashboard (app.R, about.md, data/)
-├── data/raw/          Dated raw downloads (not in Git)
-├── data/processed/    Derived data (not in Git)
-├── data/manual/       Small hand-checked inputs: overrides, academy list, validation (in Git)
-├── docs/              Proposal, work plan, methods guide, data dictionary, reports, figures
-├── python/            Data acquisition, eligibility, validation, reports
-├── R/                 Spatial processing, statistics, models, dashboard data, tests
-├── sql/               PostGIS initialisation
-├── tests/             Python tests
-├── docker-compose.yml App + PostGIS services
-├── run_all.sh         Full pipeline
-├── DESCRIPTION / renv.lock / requirements.txt   Exact package versions
-```
 
 ## Conventions
 - Coordinates **stored** in EPSG:4326, **measured** in EPSG:27700 (British National Grid), **displayed** in EPSG:3857.
