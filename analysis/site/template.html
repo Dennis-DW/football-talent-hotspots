@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!-- Template of the project page. analysis/site/12_build_site.R fills every {{name}} from
+     paper/generated/numbers.tex (the paper's own numbers) and writes site/index.html.
+     {{name|p}} writes "p = x" or "p < 0.001". Edit this file, not site/index.html. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where do England's footballers come from?</title>
+<meta name="description" content="Where English-born Premier League and Championship players born 1975–2005 were born, compared with where boys were born. Spatial statistics on open data, with a research paper and an interactive dashboard.">
+<meta property="og:title" content="Where do England's footballers come from?">
+<meta property="og:description" content="Players are {{regionRatio}}× as common per birth in London as in the South West, and each extra 10 km to a professional club means {{distPct}}% fewer. Research paper, code and dashboard.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dennis-dw.github.io/football-talent-hotspots/">
+<meta property="og:image" content="https://dennis-dw.github.io/football-talent-hotspots/figures/fig_hospital.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap">
+<style>
+:root{--accent:#1A3A5C;--hot:#b2182b;--paper:#f4f1ea;--ink:oklch(0.21 0.012 70);--ink2:oklch(0.45 0.012 70);--ink3:oklch(0.4 0.012 70);--ink4:oklch(0.33 0.012 70);--rule:oklch(0.8 0.01 80);--rule2:oklch(0.88 0.01 80);--box:oklch(0.95 0.01 85);--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,'Times New Roman',serif;font-optical-sizing:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:oklch(0.88 0.04 250)}
+a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:oklch(0.5 0.08 250 / .6)}
+a:hover{color:var(--accent)}
+.page{max-width:1040px;margin:0 auto;padding:0 40px 56px}
+.mast{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 28px;padding:16px 0 14px;border-top:3px solid var(--ink);border-bottom:1px solid var(--rule);font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.mast b{font-weight:600;color:var(--ink)}
+.mast .date{margin-left:auto}
+h1{margin:64px 0 0;max-width:900px;font-size:clamp(32px,5vw,50px);line-height:1.1;font-weight:500;letter-spacing:-.018em;text-wrap:balance}
+h1 small{display:block;margin-top:20px;font-size:.58em;line-height:1.3;font-weight:400;letter-spacing:-.005em;color:var(--ink2)}
+.authors{display:flex;flex-wrap:wrap;gap:16px 48px;margin-top:40px}
+.author-name{font-size:20px;font-weight:600;line-height:1.3}
+.author-meta{margin-top:4px;font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink2)}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;margin-top:32px;font-family:var(--sans);font-size:14px;font-weight:500}
+.btn{display:inline-block;padding:11px 20px;background:var(--ink);color:var(--paper);text-decoration:none;border-radius:2px}
+.btn:hover{background:var(--accent);color:var(--paper)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:28px 0;margin-top:64px;padding:28px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+.stat{padding:2px 24px 2px 20px;border-left:1px solid var(--ink)}
+.stat-v{font-size:46px;line-height:1;font-weight:400;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums}
+.stat-l{margin-top:12px;max-width:210px;font-family:var(--sans);font-size:13px;line-height:1.4;color:var(--ink3)}
+.row{display:flex;flex-wrap:wrap;gap:14px 56px;padding:40px 0 44px;border-top:1px solid var(--rule)}
+.row.first{border-top:none;padding:48px 0 52px}
+.row.tight{padding:36px 0 40px}
+.label{flex:1 1 150px;max-width:190px;padding-top:4px;font-family:var(--sans);font-size:13.5px;font-weight:600;line-height:1.35}
+.label.accent{color:var(--accent)}
+.body{flex:999 1 480px;min-width:0;max-width:740px}
+.lead{margin:0;font-size:23px;line-height:1.48;letter-spacing:-.005em;text-align:justify;text-justify:inter-word;hyphens:auto;text-wrap:pretty}
+.abstract{margin:0;font-size:18px;line-height:1.7;color:oklch(0.27 0.012 70);text-align:justify;text-justify:inter-word;hyphens:auto;text-wrap:pretty}
+.note{margin:0;font-size:16px;line-height:1.65;color:oklch(0.38 0.012 70);text-align:justify;text-justify:inter-word;hyphens:auto;text-wrap:pretty}
+.note code,td code{font-family:var(--mono);font-size:13px}
+.scroll{overflow-x:auto}
+table{width:100%;min-width:560px;border-collapse:collapse;font-size:16px;font-variant-numeric:lining-nums tabular-nums}
+thead tr{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink)}
+th{padding:11px 12px;text-align:right;font-family:var(--sans);font-size:12px;font-weight:500;line-height:1.35;color:var(--ink3);vertical-align:bottom}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--rule2);vertical-align:top}
+tbody tr:last-child td{border-bottom:2px solid var(--ink)}
+td.b{font-weight:600}
+table.left th,table.left td{text-align:left;padding-left:0;padding-right:16px}
+table.left th:not(:first-child),table.left td:not(:first-child){padding-left:12px}
+.table-note{margin:16px 0 0;font-family:var(--sans);font-size:13px;line-height:1.6;color:var(--ink3);text-wrap:pretty}
+.finding{display:flex;gap:20px;padding:24px 0;border-top:1px solid var(--rule2)}
+.finding:first-child{padding-top:0;border-top:none}
+.finding:last-child{padding-bottom:0}
+.finding .n{flex:0 0 22px;padding-top:5px;font-family:var(--sans);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--accent)}
+.finding h3{margin:0;font-size:20px;font-weight:600;line-height:1.3;letter-spacing:-.005em}
+.finding p{margin:8px 0 0;font-size:17px;line-height:1.62;color:var(--ink4);text-wrap:pretty}
+.figs{padding:40px 0 20px;border-top:1px solid var(--rule)}
+.figs .label{padding-bottom:28px;max-width:none}
+figure{margin:0 0 52px}
+figure img{display:block;width:100%;height:auto;mix-blend-mode:multiply}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:44px 48px;align-items:start;margin:0 0 52px}
+.pair figure{margin:0}
+figcaption{display:flex;gap:18px;margin-top:14px;padding-top:12px;border-top:1px solid var(--rule2);font-family:var(--sans);font-size:13.5px;line-height:1.55;color:oklch(0.38 0.012 70)}
+figcaption b{flex:0 0 58px;font-weight:600;color:var(--ink)}
+figcaption span{max-width:640px;text-wrap:pretty}
+.bib{border:1px solid var(--rule);border-radius:2px;background:var(--box)}
+.bib-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 8px 18px;border-bottom:1px solid oklch(0.86 0.01 80);font-family:var(--sans);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.bib button{font-family:var(--sans);font-size:12.5px;font-weight:500;letter-spacing:0;text-transform:none;padding:5px 14px;border:1px solid var(--ink);border-radius:2px;background:transparent;color:var(--ink);cursor:pointer}
+.bib button:hover{background:var(--ink);color:var(--paper)}
+.bib pre{margin:0;padding:18px 18px 22px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.75;color:oklch(0.25 0.012 70)}
+.links{border-top:1px solid var(--ink)}
+.links a{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 20px;padding:14px 0;border-bottom:1px solid var(--rule2);text-decoration:none}
+.links a:last-child{border-bottom-color:var(--ink)}
+.links span:first-child{font-size:19px}
+.links span:first-child i{font-style:normal;font-size:15px;color:oklch(0.5 0.012 70)}
+.links span:last-child{font-family:var(--sans);font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere}
+footer{display:flex;flex-direction:column;gap:10px;margin-top:24px;padding-top:24px;border-top:3px solid var(--ink);max-width:760px;font-family:var(--sans);font-size:12.5px;line-height:1.65;color:oklch(0.42 0.012 70)}
+footer p{margin:0;text-wrap:pretty}
+footer p:first-child{font-weight:500;color:var(--ink)}
+@media(max-width:560px){.page{padding:0 16px 40px}.stat-v{font-size:40px}.mast .date{margin-left:0}.lead,.abstract,.note{text-align:left;hyphens:manual}.lead{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="mast"><b>Research paper</b><span>Spatial statistics</span><span>English football</span><span>Open data</span><span class="date">November 2026</span></div>
+
+<h1>Where do England&rsquo;s footballers come from?<small>Spatial clustering of the birthplaces of Premier League and Championship players born 1975&ndash;2005</small></h1>
+
+<div class="authors"><div><div class="author-name">Dennis Wambua</div><div class="author-meta">Independent researcher</div></div></div>
+
+<div class="actions">
+<a class="btn" href="paper.pdf" target="_blank" rel="noopener">Download the paper (PDF)&nbsp;&darr;</a>
+<a href="https://denniswambua.shinyapps.io/football-talent-hotspots/" target="_blank" rel="noopener">Interactive dashboard&nbsp;&nearr;</a>
+<a href="https://github.com/Dennis-DW/football-talent-hotspots" target="_blank" rel="noopener">Source code&nbsp;&nearr;</a>
+<a href="#figures">Figures&nbsp;&darr;</a>
+</div>
+
+<div class="stats">
+<div class="stat"><div class="stat-v">{{regionRatio}}&times;</div><div class="stat-l">More players per birth in London ({{londonRate}} per 10,000 boys born) than in the South West ({{swRate}})</div></div>
+<div class="stat"><div class="stat-v">&minus;{{distPct}}%</div><div class="stat-l">Players for each extra 10 km to the nearest professional club (rate ratio {{distRR}}, 95% CI {{distLo}}&ndash;{{distHi}})</div></div>
+<div class="stat"><div class="stat-v">{{moranTTWA}}</div><div class="stat-l">Empirical Bayes Moran&rsquo;s I across {{nTTWA}} Travel to Work Areas ({{moranTTWAp|p}}): neighbouring areas are alike</div></div>
+<div class="stat"><div class="stat-v">{{shareOutsideEngland}}%</div><div class="stat-l">Of the {{nStudy}} study players were born outside England, mostly in Western Europe and the other UK nations</div></div>
+</div>
+
+<div class="row first"><div class="label accent" style="padding-top:7px">Key finding</div><div class="body"><p class="lead">Players are not born in proportion to births. A belt from Merseyside and Lancashire across to South Yorkshire produces the most players per boy born, and the south coast the fewest. Within regions, boys born closer to any professional club were more likely to reach the top two divisions. Deprivation and urbanisation do not explain the differences once region is included, and nor does distance to an elite Category&nbsp;1 academy.</p></div></div>
+
+<div class="row"><div class="label">Abstract</div><div class="body"><p class="abstract">English football spends heavily on finding young players, yet it is not known whether the players who reach the top two divisions are born across England in proportion to births or in particular places. We ask where English-born men who played in the Premier League or the Championship were born, compared with where boys were born. From Wikidata and Wikipedia we identify {{nStudy}} men born 1975&ndash;2005 with evidence of a league appearance at one of {{nClubsTopTwo}} top-two clubs since 1992; {{nEnglish}} were born in England and {{nMapped}} can be placed on a map. Expected counts come from {{birthsTotal}} million male births estimated from ONS mid-year populations. Players are {{regionRatio}} times as common per birth in London ({{londonRate}} per 10,000 male births) as in the South West ({{swRate}}), and {{nRegionsSig}} of 9 regions differ from England at p &lt; 0.05. Within regions, birthplaces are more clustered than births at distances up to 60&nbsp;km (inhomogeneous L-function, DCLF {{lDCLFall|p}}; births-only null {{lNullAll|p}}). Across Travel to Work Areas (TTWAs) the Empirical Bayes Moran&rsquo;s I is {{moranTTWA}} ({{moranTTWAp|p}}), with high values in a belt from Merseyside and Lancashire across to South Yorkshire and low values along the south coast, but only one area ({{giTopName}}, q = {{giTopQ}}) comes close to passing a false discovery rate correction. In a negative binomial model with region effects, each extra 10&nbsp;km to the nearest professional club lowers the rate by {{distPct}}% (rate ratio {{distRR}}, 95% CI {{distLo}}&ndash;{{distHi}}, {{distP|p}}), while deprivation and urban share have no effect once region is included. For the {{nAcadPlayers}} players born 1996&ndash;2005, who were of academy age after the 2012 academy reform, distance to any club matters (rate ratio {{clubYoungRR}}) and distance to an elite Category 1 academy does not ({{acadRR}}, {{acadP|p}}). Of all {{nStudy}} study players, {{shareOutsideEngland}}% were born outside England, mostly in Western Europe and the other UK nations. The results describe areas, not individuals.</p></div></div>
+
+<div class="row tight"><div class="label">Scope note</div><div class="body"><p class="note">The results are associations between areas, not proof of cause: club locations also reflect where population and industry were. Players and their club histories come from Wikidata and Wikipedia, which are community-edited; a validation sample of the first eligibility pass found {{valFIpct}}% false inclusions, which led to the rule that requires a recorded league appearance. Players are placed where they were born, usually the town of a maternity hospital, so Travel to Work Areas are used as the main areas. The births baseline is a proxy built from ONS population estimates, and deprivation is measured in 2025. The results should not be used to judge places, communities or individual children.</p></div></div>
+
+<div class="row"><div class="label">Research questions and answers</div><div class="body"><div class="scroll"><table class="left"><thead><tr><th>Question</th><th>Answer</th><th>Hypothesis</th></tr></thead><tbody>
+<tr><td class="b">RQ1. Are birthplaces more clustered than births alone would predict?</td><td>Yes. {{nRegionsSig}} of 9 regions differ from England; within regions, birthplaces are more bunched than births up to 60&nbsp;km (DCLF {{lDCLFall|p}})</td><td>H0 (births explain the pattern) rejected</td></tr>
+<tr><td class="b">RQ2. Where are the hotspots and coldspots?</td><td>A north-west belt is high and the south coast low ({{nHot}} hot and {{nCold}} cold clusters at p &lt; 0.05). No single area passes a false discovery rate of 0.05; the strongest is {{giTopName}} (q = {{giTopQ}})</td><td>H1 supported for the overall pattern, weakly for named areas</td></tr>
+<tr><td class="b">RQ3. Are the differences linked to deprivation, urbanisation or clubs and academies?</td><td>Club distance: rate ratio {{distRR}} per 10&nbsp;km ({{distP|p}}). Deprivation {{imdRR}} ({{imdP|p}}) and urban share {{urbRR}} ({{urbP|p}}) once region is included. Category 1 academy {{acadRR}} ({{acadP|p}})</td><td>H2 supported for club proximity only</td></tr>
+<tr><td class="b">RQ4. Which countries supply players born outside England, and has it changed?</td><td>{{nOutsideEngland}} players from {{nCountries}} countries and UK nations, led by France, Scotland, Ireland and Spain. Scottish-born players fell from {{scotOld}} to {{scotNew}} between the 1975&ndash;89 and 1990&ndash;2005 cohorts</td><td>Descriptive, no hypothesis</td></tr>
+</tbody></table></div><p class="table-note">Hypotheses as stated in the research proposal before any player data were collected. Every number on this page is generated from the analysis outputs, the same way as in the paper.</p></div></div>
+
+<div class="row"><div class="label">Findings</div><div class="body">
+<div class="finding"><div class="n">1</div><div><h3>A regional belt, not isolated hotspots</h3><p>London ({{londonRate}}) and the North West ({{nwRate}}) produce the most players per 10,000 boys born, the South West ({{swRate}}) and the South East ({{seRate}}) the fewest. The pattern works at the scale of regions and city-regions: region effects remove the spatial autocorrelation from the models.</p></div></div>
+<div class="finding"><div class="n">2</div><div><h3>Weak evidence for any single area</h3><p>Liverpool is the most productive area, with {{liverpoolO}} players against {{liverpoolE}} expected. The local tests find a gradient of moderately elevated areas, and only {{giTopName}} comes close to passing a correction for testing all {{nTTWA}} areas.</p></div></div>
+<div class="finding"><div class="n">3</div><div><h3>Distance to a club matters</h3><p>Each extra 10&nbsp;km to the nearest professional club lowers the rate by {{distPct}}% (95% CI {{distPctLo}}&ndash;{{distPctHi}}%). The effect is significant in {{nRobustSig}} of {{nRobust}} model variants and stronger for players born 1990&ndash;2005 (rate ratio {{distRRYoung}}).</p></div></div>
+<div class="finding"><div class="n">4</div><div><h3>Deprivation is a proxy for region</h3><p>Without region effects, deprivation seems to raise production (rate ratio {{imdRRmOne}} per 10 IMD points, {{imdPmOne|p}}). With them the effect disappears ({{imdRR}}, {{imdP|p}}): the North is both more deprived and more productive.</p></div></div>
+<div class="finding"><div class="n">5</div><div><h3>Not elite academies</h3><p>For the {{nAcadPlayers}} players born 1996&ndash;2005, distance to any club has a strong effect (rate ratio {{clubYoungRR}}), and distance to a Category 1 academy none ({{acadRR}}, {{acadP|p}}). The route into the professional game appears to start at the nearest club.</p></div></div>
+<div class="finding"><div class="n">6</div><div><h3>Half the players were born abroad</h3><p>{{shareOutsideEngland}}% of study players were born outside England. Relative to population, {{topHeadName}} leads with {{topHeadRate}} players per million people. Among players born outside the UK, Europe&rsquo;s share rose from {{eurOld}}% to {{eurNew}}% between the cohorts.</p></div></div>
+</div></div>
+
+<div class="figs" id="figures"><div class="label">Key figures</div>
+<div class="pair">
+<figure><img src="figures/fig_ttwa_sr.png" alt="Map of England's Travel to Work Areas coloured by the smoothed ratio of players to expected players. Red areas, with more players than births predict, form a belt from Merseyside to South Yorkshire and include London; blue areas run along the south coast and through the rural South West and East Anglia." loading="lazy"><figcaption><b>Figure 1</b><span>Empirical Bayes-smoothed standardised ratio by Travel to Work Area. Red: more players than births predict; blue: fewer.</span></figcaption></figure>
+<figure><img src="figures/fig_ttwa_gi.png" alt="Map of Getis-Ord Gi* clusters. Hot clusters lie in Lancashire, Greater Manchester and Yorkshire; cold clusters in Kent, Sussex, Hampshire and Wiltshire." loading="lazy"><figcaption><b>Figure 2</b><span>Getis-Ord Gi* clusters with 9,999 permutations; q is the Benjamini-Hochberg adjusted p-value.</span></figcaption></figure>
+</div>
+<figure><img src="figures/fig_regions.png" alt="Dot plot of the standardised ratio for the nine English regions with 95% confidence intervals. London and the North West are highest, the South West lowest." loading="lazy"><figcaption><b>Figure 3</b><span>Standardised ratio by region with exact 95% confidence intervals.</span></figcaption></figure>
+<figure><img src="figures/fig_robustness.png" alt="Forest plot of the rate ratio per extra 10 km to the nearest club across {{nRobust}} model variants; {{nRobustSig}} are significantly below 1." loading="lazy"><figcaption><b>Figure 4</b><span>Rate ratio per extra 10&nbsp;km to the nearest professional club across model variants, with 95% confidence intervals.</span></figcaption></figure>
+<figure><img src="figures/fig_world.png" alt="World map of study players born outside England per million national population, darker where there are more players per head." loading="lazy"><figcaption><b>Figure 5</b><span>Study players born outside England per million national population (mean 1975&ndash;2005), log scale.</span></figcaption></figure>
+</div>
+
+<div class="row"><div class="label">Files in the repository</div><div class="body"><div class="scroll"><table class="left"><thead><tr><th>File</th><th>What it holds</th></tr></thead><tbody>
+<tr><td><a href="paper.pdf">paper/main.pdf</a></td><td>The research paper: data, methods, results for RQ1&ndash;RQ4, limitations and reproducibility</td></tr>
+<tr><td><a href="https://github.com/Dennis-DW/football-talent-hotspots/blob/main/docs/reports/final_report.md" target="_blank" rel="noopener">docs/reports/final_report.md</a></td><td>The final report, with the step-by-step reports linked from it</td></tr>
+<tr><td><a href="https://github.com/Dennis-DW/football-talent-hotspots/blob/main/docs/STATISTICAL_METHODS.md" target="_blank" rel="noopener">docs/STATISTICAL_METHODS.md</a></td><td>A plain-language explanation of every statistical method</td></tr>
+<tr><td><a href="https://github.com/Dennis-DW/football-talent-hotspots/blob/main/docs/DATA_DICTIONARY.md" target="_blank" rel="noopener">docs/DATA_DICTIONARY.md</a></td><td>The variables in every output file</td></tr>
+<tr><td><a href="https://github.com/Dennis-DW/football-talent-hotspots/blob/main/paper/refs_verified.md" target="_blank" rel="noopener">paper/refs_verified.md</a></td><td>Every reference, checked against Crossref or its official page</td></tr>
+<tr><td><a href="https://github.com/Dennis-DW/football-talent-hotspots/tree/main/app" target="_blank" rel="noopener">app/</a></td><td>The Shiny dashboard</td></tr>
+</tbody></table></div><p class="table-note">The analysis runs in Docker; <code>run_all.sh</code> runs every step in order, from data collection to the paper.</p></div></div>
+
+<div class="row"><div class="label">Cite</div><div class="body"><div class="bib"><div class="bib-bar"><span>BibTeX</span><button type="button" onclick="copyBib(this)">Copy</button></div><pre id="bibtex">@misc{wambua2026talent,
+  author       = {Wambua, Dennis},
+  title        = {Where Do England's Footballers Come From? Spatial Clustering
+                  of the Birthplaces of Premier League and Championship
+                  Players Born 1975--2005},
+  year         = {2026},
+  howpublished = {\url{https://dennis-dw.github.io/football-talent-hotspots/}},
+  note         = {Code and data: https://github.com/Dennis-DW/football-talent-hotspots}
+}</pre></div></div></div>
+
+<div class="row"><div class="label">Links</div><div class="body"><div class="links">
+<a href="https://denniswambua.shinyapps.io/football-talent-hotspots/" target="_blank" rel="noopener"><span>Interactive dashboard&nbsp;<i>&nearr;</i></span><span>denniswambua.shinyapps.io/football-talent-hotspots</span></a>
+<a href="https://github.com/Dennis-DW/football-talent-hotspots" target="_blank" rel="noopener"><span>Source code&nbsp;<i>&nearr;</i></span><span>github.com/Dennis-DW/football-talent-hotspots</span></a>
+<a href="https://www.wikidata.org/" target="_blank" rel="noopener"><span>Wikidata (players, clubs, birthplaces)&nbsp;<i>&nearr;</i></span><span>www.wikidata.org</span></a>
+<a href="https://www.nomisweb.co.uk/" target="_blank" rel="noopener"><span>ONS population estimates on Nomis&nbsp;<i>&nearr;</i></span><span>www.nomisweb.co.uk</span></a>
+<a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025" target="_blank" rel="noopener"><span>English indices of deprivation 2025&nbsp;<i>&nearr;</i></span><span>www.gov.uk</span></a>
+</div></div></div>
+
+<footer>
+<p>Dennis Wambua &middot; 2026</p>
+<p>Independent research on open data. Not produced, reviewed or endorsed by the Premier League, the EFL, the Football Association or any club.</p>
+<p>Code under the MIT licence. Data: Wikidata (CC0), Wikipedia (CC BY-SA), ONS and MHCLG (Open Government Licence v3.0), World Bank (CC BY 4.0), Natural Earth.</p>
+</footer>
+</div>
+<script>
+function copyBib(btn){
+  var t=document.getElementById('bibtex').textContent;
+  var done=function(){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy'},2000)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,done)}else{done()}
+}
+</script>
+</body>
+</html>

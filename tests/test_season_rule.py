@@ -3,7 +3,7 @@ import datetime as dt
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "pipeline"))
 
 from season_rule import DAY, MONTH, YEAR, WDate, membership_seasons  # noqa: E402
 
