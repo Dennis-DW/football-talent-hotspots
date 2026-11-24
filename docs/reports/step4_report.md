@@ -114,7 +114,7 @@ Following the proposal (section 6.4):
 All units, players and count tables were loaded into **PostGIS** (schema `talent`) with **GiST spatial indexes**, as planned.
 
 ### 3.6 Main unit decision
-After the problems in §4, **Travel to Work Areas were adopted as the main unit** for Steps 5–7. Local authorities and hexagons are kept for the multi-scale comparison the proposal requires. TTWA versions of the Step 3 variables were computed (`R/03_area_covariates.R`): deprivation, urban share and club distance.
+After the problems in §4, **Travel to Work Areas were adopted as the main unit** for Steps 5–7. Local authorities and hexagons are kept for the multi-scale comparison the proposal requires. TTWA versions of the Step 3 variables were computed (`analysis/prepare/03_area_covariates.R`): deprivation, urban share and club distance.
 
 ### 3.7 Tests
 `tests/test_counts.py` adds 14 tests (34 in the project). They check that:
@@ -198,9 +198,9 @@ These should go into the proposal's section 6.5 (spatial units) at the next revi
 Inside the app container (`docker compose exec app bash`), after Steps 2–3:
 
 ```bash
-python python/11_ons_boundaries.py     # includes TTWA boundaries
-Rscript R/03_area_covariates.R         # LSOA -> TTWA, TTWA covariates
-Rscript R/04_expected_counts.R         # units, O/E/SR, PostGIS, maps (~3 min)
+python pipeline/areas/11_ons_boundaries.py     # includes TTWA boundaries
+Rscript analysis/prepare/03_area_covariates.R         # LSOA -> TTWA, TTWA covariates
+Rscript analysis/prepare/04_expected_counts.R         # units, O/E/SR, PostGIS, maps (~3 min)
 pytest tests/                          # 34 tests
 ```
 

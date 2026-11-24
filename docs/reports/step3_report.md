@@ -75,7 +75,7 @@ Every data address was found by **querying the publishers' own catalogues**, not
 - the Nomis dataset catalogue
 - the GOV.UK statistics page for IMD 2025
 
-### 3.2 Boundaries (`python/11_ons_boundaries.py`)
+### 3.2 Boundaries (`pipeline/areas/11_ons_boundaries.py`)
 Downloaded from the ONS Open Geography Portal:
 - **LAD December 2021** boundaries, filtered to the 309 in England
 - **LSOA 2021** boundaries, which already include the **2021 rural-urban class** of each neighbourhood
@@ -83,7 +83,7 @@ Downloaded from the ONS Open Geography Portal:
 
 All 33,755 English LSOAs matched a LAD.
 
-### 3.3 Births baseline (`python/10_births_baseline.py`)
+### 3.3 Births baseline (`pipeline/areas/10_births_baseline.py`)
 The plan was ONS **live births by local authority**. Their Nomis dataset (NM_205_1) only starts in **2013**, so the baseline uses the closest official substitute: **boys aged under 1** in ONS mid-year population estimates (NM_31_1), available from 1981.
 
 | Birth years | How births are estimated |
@@ -108,7 +108,7 @@ The **English Indices of Deprivation 2025** were published in late 2025 on 2021 
 ### 3.5 Urbanisation
 The **2021 Rural-Urban Classification** comes with the LSOA boundary layer. Each LAD's `urban_share` is the share of its residents living in LSOAs classed as urban.
 
-### 3.6 Club grounds (`python/09_club_grounds.py`)
+### 3.6 Club grounds (`pipeline/clubs/09_club_grounds.py`)
 - Every English league club (tiers 1–4, 118 clubs) was looked up in Wikidata for its **home ground and coordinates**, including start and end dates where recorded, so clubs that moved are placed correctly.
 - **6 manual overrides** fix long temporary ground-shares that Wikidata doesn't record by season:
 
@@ -123,14 +123,14 @@ The **2021 Rural-Urban Classification** comes with the LSOA boundary layer. Each
 
 Venue coordinates for the overrides are taken from Wikidata via the venues' Wikipedia articles, not typed in by hand.
 
-### 3.7 Distance to the nearest professional club (`R/03_area_covariates.R`)
+### 3.7 Distance to the nearest professional club (`analysis/prepare/03_area_covariates.R`)
 The proposal asks for distance to the nearest professional club **when each birth cohort was aged 12**, since that's when academy recruitment usually starts.
 1. For every season 1987/88–2017/18 (the seasons when the 1975–2005 cohorts turned 12), the distance from **each LSOA centre** to the **nearest of that season's 91–92 league grounds** was measured in British National Grid (metres).
 2. Each LAD's distance for that season is the **population-weighted average** of its LSOAs.
 3. These are combined across seasons, **weighted by the number of boys born in each year**: `dist_club_i = Σ_y births_i,y × distance_i(season y+12) / Σ_y births_i,y`
 
 ### 3.8 Quality report
-`python/12_step3_report.py` writes `docs/reports/data_quality_step3.md`.
+`pipeline/reports/12_step3_report.py` writes `docs/reports/data_quality_step3.md`.
 
 ---
 
@@ -190,14 +190,12 @@ These should be added to the proposal's methodology (sections 6.3 and 6.2) at th
 Inside the app container (`docker compose exec app bash`):
 
 ```bash
-cd python
-python 09_club_grounds.py        # club grounds by season (needs Step 2's club table)
-python 10_births_baseline.py     # births baseline from Nomis
-python 11_ons_boundaries.py      # ONS boundaries + lookup (~5 min)
-cd ..
+python pipeline/clubs/09_club_grounds.py        # club grounds by season (needs Step 2's club table)
+python pipeline/areas/10_births_baseline.py     # births baseline from Nomis
+python pipeline/areas/11_ons_boundaries.py      # ONS boundaries + lookup (~5 min)
 # IMD 2025 File 7 must be in data/raw/imd/ (downloaded from GOV.UK)
-Rscript R/03_area_covariates.R   # LAD covariates (~2 min)
-cd python && python 12_step3_report.py
+Rscript analysis/prepare/03_area_covariates.R   # LAD covariates (~2 min)
+python pipeline/reports/12_step3_report.py
 ```
 
 Tests: `pytest tests/` (20 tests, all passing).

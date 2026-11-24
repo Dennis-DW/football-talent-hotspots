@@ -1,0 +1,10 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{The birthplace effect} C\^ot\'e et al.\ \cite{cote2006} found that North American professional athletes in ice hockey, basketball, baseball and golf were over-represented among those born in smaller cities and under-represented among those born in the largest metropolitan areas. MacDonald et al.\ \cite{macdonald2009} found a similar place effect, and no date-of-birth effect, in American football. Both studies group birthplaces by city size and compare them with census populations. They do not use the location of the birthplace, so they cannot say whether the over-represented places are next to each other, or whether they lie near clubs. Our design keeps the location of every birthplace.
+
+\paragraph{Disease mapping} Comparing observed counts with counts expected from a population at risk is the standard method of disease mapping. Small areas give unstable ratios, which Empirical Bayes smoothing shrinks towards the overall rate \cite{marshall1991}. Moran's $I$ adjusted for unequal populations \cite{assuncao1999} tests global clustering of rates. Local statistics, the Getis-Ord $G_i^*$ \cite{getis1992} and local Moran's $I$ \cite{anselin1995}, locate clusters, and the false discovery rate \cite{benjamini1995} controls the errors from testing every area. For point data, Ripley's $K$-function \cite{ripley1977} and its inhomogeneous version \cite{baddeley2000,baddeley2015} test clustering relative to a non-constant intensity, here the intensity of births.
+
+\paragraph{Area units} Results from area data depend on the areas chosen, the modifiable areal unit problem \cite{openshaw1984}. We therefore report three sets of areas and a point-pattern test that uses no areas at all.
+
+\paragraph{Open knowledge bases} Wikidata \cite{vrandecic2014} records club memberships with dates for many professional footballers, which makes a population study of this size possible without proprietary data. Its coverage and accuracy are uneven, so we measure the error of our inclusion rule on a validation sample (Section~\ref{sec:validation}).

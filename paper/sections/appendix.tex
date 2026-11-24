@@ -1,0 +1,58 @@
+\section{Data sources}
+
+\begin{center}\begin{minipage}{\linewidth}\centering
+\captionof{table}{Data sources. All are free.}
+\label{tab:sources}
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{5.6cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Data & Source & Licence \\
+\midrule
+Players, clubs, memberships, birthplaces, club grounds & Wikidata \cite{vrandecic2014}, snapshot \snapshotDate & CC0 \\
+League appearances; 2022/23 and 2025/26 tables; U18 league & English Wikipedia & CC BY-SA 4.0 \\
+Club division by season, 1985/86--2024/25 & \texttt{engsoccerdata} \cite{curley2016} & GPL ($\geq$ 2) \\
+Population by age, 1981--2006 & ONS mid-year estimates, Nomis \cite{onsnomis} & OGL v3.0 \\
+Boundaries, lookups, Rural-Urban Classification & ONS Open Geography Portal \cite{onsgeo} & OGL v3.0 \\
+Index of Multiple Deprivation 2025 & MHCLG \cite{imd2025} & OGL v3.0 \\
+National populations & World Bank WDI \cite{worldbank} & CC BY 4.0 \\
+World map & Natural Earth \cite{naturalearth} & Public domain \\
+\bottomrule
+\end{tabular}
+\end{minipage}\end{center}
+
+\FloatBarrier
+\section{Additional results}
+
+\begin{center}\begin{minipage}{\linewidth}\centering
+\captionof{table}{The eight TTWAs with the highest and lowest Empirical Bayes-smoothed SR among those expecting at least five players.}
+\label{tab:toparea}
+\tbl{toparea.tex}
+\end{minipage}\end{center}
+
+\begin{center}\begin{minipage}{\linewidth}\centering
+\captionof{table}{Region effects in the main model (M2), as rate ratios relative to the West Midlands.}
+\label{tab:regionfx}
+\tbl{regionfx.tex}
+\end{minipage}\end{center}
+
+\FloatBarrier
+\section{Changes from the research proposal}
+
+\begin{center}\begin{minipage}{\linewidth}\centering
+\captionof{table}{Changes from the research proposal and their reasons.}
+\label{tab:changes}
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{5.5cm}}
+\toprule
+Proposal & Done & Reason \\
+\midrule
+Eligibility from Wikidata memberships & League-appearance evidence from Wikipedia required & \valFIpct\% false inclusions in the validation \\
+ONS live births as baseline & Boys aged under one, ONS mid-year estimates & Births by local authority available only from 2013 \\
+Local authorities as main areas & Travel to Work Areas & Hospital effect \\
+999 permutations for local tests & \nPerm & 999 cannot pass FDR with 155 areas \\
+Published Category 1 list & Under-18 national league structure & No official historical list \\
+Manual squad-list validation & Automated Wikipedia validation & Not done \\
+10\,km hexagons, MSOAs, BYM2 & Not used & Too sparse, optional, not needed \\
+\bottomrule
+\end{tabular}
+\end{minipage}\end{center}

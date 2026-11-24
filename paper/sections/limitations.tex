@@ -1,0 +1,15 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\begin{enumerate}
+  \item \textbf{Association, not causation.} Club locations reflect historic population and industry, and distance to a club may stand in for local football culture that we do not measure.
+  \item \textbf{Community-edited data.} Wikidata and Wikipedia are incomplete and sometimes wrong. The validation used Wikipedia, which is not independent of Wikidata, and a manual check against squad lists was not done. The first-pass false inclusion rate was \valFIpct\%; the appearance rule addresses it, but its own error rate was not measured on a fresh sample.
+  \item \textbf{Probable evidence.} \shareProbable\% of the study players have only probable evidence, because the infobox gives one appearance total for a spell in which the club changed division. The Premier League flag is the most affected. The certain-only model gives the same result.
+  \item \textbf{Birthplace is not upbringing.} Players are placed where they were born, usually the town of a maternity hospital. TTWAs reduce the hospital effect but do not remove it, and players who moved in childhood are placed where they were born.
+  \item \textbf{The births baseline is a proxy}: boys aged under one at mid-year, and back-estimated for 1975--80 from older ages in 1981, which omits infant deaths and migration in the first years.
+  \item \textbf{Deprivation is measured in 2025}, not when the players grew up, on neighbourhoods that have changed since.
+  \item \textbf{Weak evidence for named hotspots.} No TTWA passes $q<0.05$ with the permutation test, so conclusions rest on the overall pattern.
+  \item \textbf{Academies are placed at the club's ground}, not at the training ground, and the Category 1 list relies on Wikipedia with two seasons filled from the nearest season. The academy sub-model has \nAcadPlayers{} players and less power.
+  \item \textbf{The youngest cohort is incomplete.} Players born 2000--05 are early in their careers, and many will still reach the top two divisions after the data snapshot.
+  \item \textbf{Ecological fallacy.} Results describe areas, not individuals.
+\end{enumerate}

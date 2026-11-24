@@ -1,0 +1,23 @@
+\section{Introduction}
+
+English clubs, the leagues and the Football Association spend large sums on finding and developing young players. Under the Elite Player Performance Plan (EPPP), introduced in 2012, academies are graded into categories and the best-resourced, Category 1, may recruit more widely. Behind this spending lies a geographic question that is rarely measured: are the players who reach the professional game born across the country in proportion to the number of children born there, or do some places produce far more than their share?
+
+Earlier work on the \emph{birthplace effect} found that the size of a player's home community is linked to reaching elite level in several sports \cite{cote2006,macdonald2009}. That work compared broad categories of city size. It did not test whether birthplaces cluster in space, where the clusters are, or whether they follow the location of clubs. Spatial epidemiology has standard tools for exactly these questions: a disease map compares observed cases with the number expected from the population at risk, and tests whether the excess clusters \cite{marshall1991,assuncao1999,getis1992,anselin1995}. We apply them to footballers, with boys born in each area as the population at risk.
+
+We study English-born men born 1975--2005 who played in the Premier League or the Championship since 1992 and ask four questions:
+\begin{itemize}
+  \item[\textbf{RQ1}] Are the birthplaces of these players more clustered than births alone would predict?
+  \item[\textbf{RQ2}] Where are the areas that produce significantly more (hotspots) or fewer (coldspots) players than expected?
+  \item[\textbf{RQ3}] Are the differences linked to deprivation, urbanisation or distance to professional clubs and elite academies?
+  \item[\textbf{RQ4}] For players born outside England, which countries supply them, and has this changed between the 1975--89 and 1990--2005 birth cohorts?
+\end{itemize}
+
+\noindent The paper contributes:
+\begin{itemize}
+  \item A study population of \nStudy{} players built from open data, with a rule that requires evidence of a league appearance rather than a contract, and a validation of that rule (Section~\ref{sec:data}).
+  \item A births-based expected count for every English area, and a comparison of local authorities with Travel to Work Areas that shows how much of the local-authority pattern is caused by maternity hospitals rather than by where players grew up (Section~\ref{sec:units}).
+  \item Tests of clustering at three spatial scales and of local hotspots with false discovery rate control, and regression models of the differences with robustness checks across ten variants (Section~\ref{sec:results}).
+  \item The code, the cached outputs and an interactive dashboard, so that each number in this paper can be traced to the file that produced it (Section~\ref{sec:repro}).
+\end{itemize}
+
+The main answers are: yes, clustered, mostly at the scale of regions; a north-west belt of high production and a south-coast zone of low production, with weak evidence for any single area; distance to the nearest club, not deprivation, urbanisation or elite academies; and the foreign-born half of the players comes mostly from Western Europe and the other UK nations, with a sharp fall in Scottish-born players.

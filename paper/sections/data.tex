@@ -1,0 +1,48 @@
+\section{Data}
+\label{sec:data}
+
+All sources are free. Table~\ref{tab:sources} in the appendix lists them with their licences.
+
+\subsection{Clubs and seasons}
+A player is in the study only if he played for a club in a season when that club was in the top two divisions. We built the division of every English league club in every season from 1985/86 to 2025/26 from the \texttt{engsoccerdata} package \cite{curley2016} and, for 2022/23 and 2025/26, from the league tables on Wikipedia season articles. For the \nSeasonTables{} season tables available in both sources the club lists matched exactly. \nClubsTopTwo{} clubs were in the top two divisions at least once between 1992/93 and 2025/26; \nClubsAll{} clubs played in the four divisions in the seasons we need for the distance covariate (Section~\ref{sec:covariates}).
+
+\subsection{Players}
+We queried Wikidata \cite{vrandecic2014} on \snapshotDate{} for every footballer born 1970 or later with a membership at one of the \nClubsTopTwo{} clubs. This returned \nMemberships{} memberships for \nFetched{} players, with join and leave dates and their precision, matches played where recorded, birth date, sex, birthplace and its coordinates and country. \shareYearOnly\% of memberships have a join or leave date recorded to the year only. Since seasons run from August to May, a year-only date is ambiguous; we fixed a rule before looking at the player data (a year-only start $Y$ is the season starting in August $Y$, a year-only end $Y$ is the season ending in May $Y$) and flagged the \nAmbiguous{} players who qualify only under the most generous reading.
+
+\paragraph{A contract is not an appearance} A first eligibility pass used Wikidata memberships alone. The validation (Section~\ref{sec:validation}) showed that many included players had been on a club's books without playing a league match. We therefore require evidence of at least one league appearance from the player's English Wikipedia infobox, which lists every club spell with its years and league appearances. Evidence is \emph{certain} if the spell with appearances was at a club that was in the top two divisions in every season of the spell, and \emph{probable} if the club was in the top two divisions in only some seasons of the spell (the infobox gives one total for the spell), or if there is no infobox and Wikidata records matches played. Table~\ref{tab:flow} shows the resulting study population.
+
+\begin{table}[ht]
+\centering
+\caption{Study population. Born 1975--2005, men only, with evidence of a league appearance in the top two divisions between 1992/93 and 2025/26.}
+\label{tab:flow}
+\tbl{flow.tex}
+\end{table}
+
+Of the \nStudy{} study players, \nCertain{} have certain and \nProbable{} (\shareProbable\%) probable evidence, and \nPremier{} played in the Premier League (\nPremierCertain{} with certain evidence). \nEnglish{} (\shareEnglish\%) were born in England. The main analysis (RQ1--RQ3) uses the \nMapped{} English-born players whose birthplace can be placed on the map: \nTown{} with a town or city and \nLondonOnly{} whose birthplace is recorded only as ``London''. The ``London'' players are used only where the whole of London is one area (Section~\ref{sec:units}). RQ4 uses every study player.
+
+\subsection{Validation}
+\label{sec:validation}
+We drew a seeded random sample of 150 included and 50 excluded players from the first, Wikidata-only pass and checked each against the player's Wikipedia infobox. Table~\ref{tab:validation} gives the error rates. The false inclusion rate of \valFIpct\% led to the appearance-evidence rule above. The check is not fully independent, since Wikidata and Wikipedia are edited by overlapping communities; a manual check against published squad lists was planned but not done.
+
+\begin{table}[ht]
+\centering
+\caption{Validation of the first, Wikidata-only eligibility pass against the English Wikipedia infobox. Undecidable cases are not counted in the rates.}
+\label{tab:validation}
+\tbl{validation.tex}
+\end{table}
+
+\subsection{Births}
+\label{sec:births}
+The expected number of players in an area depends on how many boys were born there. ONS publishes births by local authority on Nomis only from 2013, so we use the number of boys aged under one in the ONS mid-year population estimates \cite{onsnomis}, averaged over mid-years $y$ and $y+1$ for birth year $y$. Single-year estimates start in 1981; for 1976--80 we use the boys aged 1--4 in 1981 divided by four, and for 1975 those aged 5--9 divided by five. All figures are on 2021 local authority boundaries (\nLAD{} authorities), the only set with estimates back to 1981. The proxy gives \birthsTotal{} million male births in England over 1975--2005, between \birthsLow{} (\birthsLowYear) and \birthsHigh{} (\birthsHighYear) per year. To place births within local authorities we share each authority's births among its 2021 Lower layer Super Output Areas (LSOAs, \nLSOA{} in England) in proportion to their population.
+
+\subsection{Covariates}
+\label{sec:covariates}
+\paragraph{Deprivation} The English Indices of Deprivation 2025 \cite{imd2025} give an Index of Multiple Deprivation (IMD) score for each 2021 LSOA. An area's score is the population-weighted mean of its LSOA scores. The index measures deprivation in 2025, not when the players grew up.
+
+\paragraph{Urbanisation} The share of an area's population living in LSOAs classed as urban by the ONS Rural-Urban Classification 2021 \cite{onsgeo}.
+
+\paragraph{Distance to a professional club} Academy recruitment usually starts around age 12, so for each birth cohort we take the season in which it turned 12 (1987/88 to 2017/18), measure the distance from every LSOA centroid to the nearest ground of that season's \emph{four-division} league clubs (91--92 grounds, from Wikidata with six documented ground-share fixes), average over LSOAs weighting by population, and then average over cohorts weighting by births. The median Travel to Work Area lies \distMedTTWA{}\,km from a club.
+
+\paragraph{Category 1 academies} No official historical list exists. Only Category 1 academies play in the first division (``League 1'') of the national under-18 league, so each season's League 1 clubs on Wikipedia give that season's Category 1 academies: \acadPerSeasonLo{}--\acadPerSeasonHi{} per season and \nAcadClubs{} clubs over 2012/13--2021/22. An academy is placed at its club's ground.
+
+\paragraph{National populations} For RQ4, mid-year populations from the World Bank \cite{worldbank} and, for the UK nations, the ONS.

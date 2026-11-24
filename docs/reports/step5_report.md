@@ -110,7 +110,7 @@ London appears close to 1 here because the 98 "London"-only players can't be pla
 | Null test | One births-only fake pattern + 199 simulations | Checks that the method doesn't create false clustering |
 | Regions | Players per 10,000 male births; exact Poisson test of observed vs. expected | Regional view of the same question |
 
-Script: `R/05_clustering.R`. Runtime about 5 minutes with 999 simulations.
+Script: `analysis/models/05_clustering.R`. Runtime about 5 minutes with 999 simulations.
 
 ---
 
@@ -151,8 +151,8 @@ Script: `R/05_clustering.R`. Runtime about 5 minutes with 999 simulations.
 Inside the app container, after Steps 2–4:
 
 ```bash
-python python/11_ons_boundaries.py   # includes the LAD -> region lookup
-Rscript R/05_clustering.R 999        # ~5 min; use e.g. 19 for a quick trial
+python pipeline/areas/11_ons_boundaries.py   # includes the LAD -> region lookup
+Rscript analysis/models/05_clustering.R 999        # ~5 min; use e.g. 19 for a quick trial
 ```
 
 Outputs: `data/processed/step5_regions.csv`, `step5_tests.csv`, `step5_linhom_envelope.csv`, and `docs/reports/figures/step5_*.png`.

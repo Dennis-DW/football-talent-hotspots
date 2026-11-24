@@ -1,6 +1,6 @@
 # Data Quality Report — Step 3
 
-*Generated 2026-11-18 by `python/12_step3_report.py`.*
+*Generated 2026-11-18 by `pipeline/reports/12_step3_report.py`.*
 
 ## Summary
 
@@ -13,7 +13,7 @@
 | Deprivation | English Indices of Deprivation 2025, IMD score (LSOA 2021) |
 | Urbanisation | Rural-Urban Classification 2021 (LSOA) |
 | Club grounds | 118 clubs, seasons 1985/86–2025/26 |
-| Category 1 academies | 0 entries compiled (to be completed before the Step 7 sub-model) |
+| Category 1 academies | 239 entries compiled (to be completed before the Step 7 sub-model) |
 
 ## Births baseline
 

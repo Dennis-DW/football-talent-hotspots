@@ -176,13 +176,13 @@ Median distance: 20.5 km to a club, 52 km to a Category 1 academy (correlation 0
 
 | Part | Method | Script |
 |---|---|---|
-| Main models | Negative binomial (`MASS::glm.nb`), offset log E, covariates per TTWA, region = the region holding most of the TTWA's population | `R/07_models.R` |
-| Collinearity | VIF from auxiliary regressions | `R/07_models.R` |
-| Spatial checks | Moran's I of Pearson residuals (999 permutations); robust LM tests (`spdep::lm.RStests`); `spatialreg::errorsarlm` / `lagsarlm` on log smoothed SR | `R/07_models.R` |
-| Robustness | Same model for 6 variants, excluding 5 big-city TTWAs, and at local authority level | `R/07_models.R` |
-| Academy list | Wikipedia U18 national league, League 1 section per season | `python/13_category1_academies.py` |
-| Academy sub-model | Cohort 1996–2005; distances in the season each cohort turned 12 (from 2012/13 for academies); negative binomial with region effects | `R/07b_academy_model.R` |
-| RQ4 | Counts by country; World Bank population 1975–2005 (ONS for England, Scotland, Wales) | `python/14_country_population.py`, `R/08_foreign_born.R` |
+| Main models | Negative binomial (`MASS::glm.nb`), offset log E, covariates per TTWA, region = the region holding most of the TTWA's population | `analysis/models/07_models.R` |
+| Collinearity | VIF from auxiliary regressions | `analysis/models/07_models.R` |
+| Spatial checks | Moran's I of Pearson residuals (999 permutations); robust LM tests (`spdep::lm.RStests`); `spatialreg::errorsarlm` / `lagsarlm` on log smoothed SR | `analysis/models/07_models.R` |
+| Robustness | Same model for 6 variants, excluding 5 big-city TTWAs, and at local authority level | `analysis/models/07_models.R` |
+| Academy list | Wikipedia U18 national league, League 1 section per season | `pipeline/clubs/13_category1_academies.py` |
+| Academy sub-model | Cohort 1996–2005; distances in the season each cohort turned 12 (from 2012/13 for academies); negative binomial with region effects | `analysis/models/07b_academy_model.R` |
+| RQ4 | Counts by country; World Bank population 1975–2005 (ONS for England, Scotland, Wales) | `pipeline/countries/14_country_population.py`, `analysis/models/08_foreign_born.R` |
 
 ---
 
@@ -242,11 +242,11 @@ The headline findings for the final report and dashboard:
 Inside the app container, after Steps 2–6:
 
 ```bash
-Rscript R/07_models.R                              # main models, spatial checks, robustness (~1 min)
-python python/13_category1_academies.py            # Category 1 academy list
-Rscript R/07b_academy_model.R                      # academy-era sub-model (~2 min)
-python python/14_country_population.py             # country populations
-Rscript R/08_foreign_born.R                        # RQ4
+Rscript analysis/models/07_models.R                              # main models, spatial checks, robustness (~1 min)
+python pipeline/clubs/13_category1_academies.py            # Category 1 academy list
+Rscript analysis/models/07b_academy_model.R                      # academy-era sub-model (~2 min)
+python pipeline/countries/14_country_population.py             # country populations
+Rscript analysis/models/08_foreign_born.R                        # RQ4
 ```
 
 Outputs: `data/processed/step7_*.csv`, `step7b_*.csv`, `step8_rq4_*.csv`; figures `step7_rate_ratios.png`, `rq4_world_per_million.png`, `rq4_top_countries.png`.

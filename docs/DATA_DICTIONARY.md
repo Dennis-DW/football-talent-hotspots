@@ -126,4 +126,4 @@ Variables in the main output files. All files are created by the pipeline (see [
 ---
 
 ## Dashboard data (`app/data/`)
-Built by `R/09_app_data.R`: `units.rds` (simplified areas + hotspot results), `births_unit_year.rds`, `players.rds`, `relative_risk.tif`, `tables.rds`, `world.rds`.
+Built by `analysis/dashboard/09_app_data.R`: `units.rds` (simplified areas + hotspot results), `births_unit_year.rds`, `players.rds`, `relative_risk.tif`, `tables.rds`, `world.rds`.

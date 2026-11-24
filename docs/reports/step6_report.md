@@ -120,7 +120,7 @@ The permutation test is the main result because SR values are **skewed** (Liverp
 | Multiple testing | Benjamini–Hochberg FDR across areas; significance at q < 0.05, with q < 0.10 and unadjusted p < 0.05 shown as weaker tiers |
 | Sensitivity | Normal-theory Gi\* p-values with FDR |
 
-Script: `R/06_hotspots.R` (about 2 minutes).
+Script: `analysis/models/06_hotspots.R` (about 2 minutes).
 
 ---
 
@@ -172,7 +172,7 @@ Script: `R/06_hotspots.R` (about 2 minutes).
 Inside the app container, after Steps 2–4:
 
 ```bash
-Rscript R/06_hotspots.R 999 9999     # global / local permutations (~2 min)
+Rscript analysis/models/06_hotspots.R 999 9999     # global / local permutations (~2 min)
 ```
 
 Outputs: `data/processed/step6_global.csv`, `step6_{ttwa,lad21,hex20}_{weights}.csv` (one row per area: O, E, SR, SR_EB, Gi z / p / q, normal-theory q, LISA, classes), and `docs/reports/figures/step6_*.png`.

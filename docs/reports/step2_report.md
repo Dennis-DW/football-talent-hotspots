@@ -61,15 +61,15 @@ The 2000–05 group is smaller because many of these players are still early in 
 ### 3.1 Club–season–division table
 **Why:** a player is in the study only if he played for a club **in a season when that club was in the top two divisions**, so we need every club's division in every season.
 
-1. **engsoccerdata** (R package, pinned to commit `872c5c3`) provided all English league seasons from 1985/86 to 2024/25 except **2022/23** (`R/01_club_tiers_engsoc.R`).
-2. **Wikipedia season articles** provided the missing seasons (**2022/23 and 2025/26**) and a cross-check of 2016/17–2024/25 (`python/01_league_tables_wikipedia.py`). The script reads the league table on each season page and links every club to its Wikidata ID.
-3. **Club → Wikidata ID matching** (`python/02_club_qids.py`): 117 club names were matched, 98 automatically from the Wikipedia tables, 11 by article-title search and **8 by manual correction**.
+1. **engsoccerdata** (R package, pinned to commit `872c5c3`) provided all English league seasons from 1985/86 to 2024/25 except **2022/23** (`analysis/prepare/01_club_tiers_engsoc.R`).
+2. **Wikipedia season articles** provided the missing seasons (**2022/23 and 2025/26**) and a cross-check of 2016/17–2024/25 (`pipeline/clubs/01_league_tables_wikipedia.py`). The script reads the league table on each season page and links every club to its Wikidata ID.
+3. **Club → Wikidata ID matching** (`pipeline/clubs/02_club_qids.py`): 117 club names were matched, 98 automatically from the Wikipedia tables, 11 by article-title search and **8 by manual correction**.
 4. **Cross-check:** for the 32 season–division tables available in both sources, the club lists matched **exactly (0 mismatches)**.
 
 Seasons start in 1985/86, not 1992/93, because Step 3 needs every professional club at the time each birth cohort was aged 12.
 
 ### 3.2 Season assignment rule (fixed before looking at the data)
-Wikidata usually gives club join and leave dates **to the year only** (87% of memberships). Seasons run August–May, so "joined 2004" could mean the 2003/04 or the 2004/05 season. To avoid case-by-case choices, the rule was written and tested **before** any player data was examined (`python/season_rule.py`, 13 unit tests):
+Wikidata usually gives club join and leave dates **to the year only** (87% of memberships). Seasons run August–May, so "joined 2004" could mean the 2003/04 or the 2004/05 season. To avoid case-by-case choices, the rule was written and tested **before** any player data was examined (`pipeline/season_rule.py`, 13 unit tests):
 
 | Date | Assigned to |
 |---|---|
@@ -81,7 +81,7 @@ Wikidata usually gives club join and leave dates **to the year only** (87% of me
 A player who qualifies only under the most generous reading of year-only dates is flagged **`season_ambiguous`** (265 study players).
 
 ### 3.3 Fetching players from Wikidata
-`python/03_fetch_wikidata.py` queried every footballer with a membership at one of the 78 clubs and born 1970 or later. That gave **31,847 memberships for 12,620 players**, with:
+`pipeline/players/03_fetch_wikidata.py` queried every footballer with a membership at one of the 78 clubs and born 1970 or later. That gave **31,847 memberships for 12,620 players**, with:
 - club join and leave dates **and their precision** (year, month or day)
 - matches played, where recorded
 - birth date, sex, birthplace, birthplace coordinates and country, and position
@@ -89,14 +89,14 @@ A player who qualifies only under the most generous reading of year-only dates i
 Results were saved as dated snapshots, so the study can be reproduced even after Wikidata changes.
 
 ### 3.4 First eligibility pass (Wikidata only)
-`python/04_eligibility.py` applied the season rule:
+`pipeline/players/04_eligibility.py` applied the season rule:
 - **Cohort:** born 1 January 1975 – 31 December 2005
 - **Men only:** sex recorded as male
 - **Memberships recorded with 0 matches played** were ignored
 - **Memberships with no dates at all** counted only if the club was in the top two divisions for the player's whole likely career (ages 17–35), since then any timing would qualify
 
 ### 3.5 Validation (200 players)
-`python/06_validation_sample.py` drew a seeded random sample: **150 included and 50 excluded** players. `python/08_validate_wikipedia.py` checked each one against the player's **English Wikipedia infobox**, which lists every club spell with its years and **league appearances**:
+`pipeline/validation/06_validation_sample.py` drew a seeded random sample: **150 included and 50 excluded** players. `pipeline/validation/08_validate_wikipedia.py` checked each one against the player's **English Wikipedia infobox**, which lists every club spell with its years and **league appearances**:
 
 | Measure | Result |
 |---|---|
@@ -111,7 +111,7 @@ Almost every false inclusion was a player **under contract but who never played*
 - **Jason Gilchrist:** Burnley 2013–2016, 0 apps
 
 ### 3.6 Tightened rule: appearance evidence required
-The work plan's decision point said to tighten the rule if validation errors were high. `python/04b_appearance_evidence.py` re-examined **all ~10,760 candidates**, including those excluded in the first pass, using their Wikipedia infoboxes:
+The work plan's decision point said to tighten the rule if validation errors were high. `pipeline/players/04b_appearance_evidence.py` re-examined **all ~10,760 candidates**, including those excluded in the first pass, using their Wikipedia infoboxes:
 
 | Evidence level | Meaning | Players |
 |---|---|---|
@@ -126,11 +126,11 @@ The work plan's decision point said to tighten the rule if validation errors wer
 **Main analysis = certain + probable. Sensitivity analysis = certain only.**
 
 ### 3.7 Birthplaces and country of birth
-1. **Precision** (`python/05_geocode_fallback.py`): each birthplace was classified as town, county/region or whole country (e.g. "England"). Only **one** birthplace lacked coordinates, and Nominatim (OpenStreetMap) couldn't resolve it either.
-2. **Country of birth** (`R/02_birth_country.R`): each birthplace point was placed in Natural Earth map units, which split the UK into England, Scotland, Wales and Northern Ireland. 6,418 points fell inside a unit, and 148 coastal points were snapped to the nearest unit within 10 km.
+1. **Precision** (`pipeline/players/05_geocode_fallback.py`): each birthplace was classified as town, county/region or whole country (e.g. "England"). Only **one** birthplace lacked coordinates, and Nominatim (OpenStreetMap) couldn't resolve it either.
+2. **Country of birth** (`analysis/prepare/02_birth_country.R`): each birthplace point was placed in Natural Earth map units, which split the UK into England, Scotland, Wales and Northern Ireland. 6,418 points fell inside a unit, and 148 coastal points were snapped to the nearest unit within 10 km.
 
 ### 3.8 Reports
-- `python/07_quality_report.py` generates `docs/reports/data_quality_step2.md`.
+- `pipeline/reports/07_quality_report.py` generates `docs/reports/data_quality_step2.md`.
 - Every excluded player is listed with a reason in `exclusion_log.csv`:
 
 | Reason | Players |
@@ -198,18 +198,17 @@ These changes should be added to the proposal's methodology (section 6.6) at the
 Inside the app container (`docker compose exec app bash`):
 
 ```bash
-Rscript R/01_club_tiers_engsoc.R
-cd python
-python 01_league_tables_wikipedia.py
-python 02_club_qids.py
-python 03_fetch_wikidata.py          # ~30 min, creates new dated snapshots
-python 04_eligibility.py
-python 04b_appearance_evidence.py    # ~15 min
-python 05_geocode_fallback.py
-cd .. && Rscript R/02_birth_country.R && cd python
-python 07_quality_report.py
+Rscript analysis/prepare/01_club_tiers_engsoc.R
+python pipeline/clubs/01_league_tables_wikipedia.py
+python pipeline/clubs/02_club_qids.py
+python pipeline/players/03_fetch_wikidata.py          # ~30 min, creates new dated snapshots
+python pipeline/players/04_eligibility.py
+python pipeline/players/04b_appearance_evidence.py    # ~15 min
+python pipeline/players/05_geocode_fallback.py
+Rscript analysis/prepare/02_birth_country.R
+python pipeline/reports/07_quality_report.py
 # optional, to redo the validation:
-python 06_validation_sample.py && python 08_validate_wikipedia.py
+python pipeline/validation/06_validation_sample.py && python pipeline/validation/08_validate_wikipedia.py
 ```
 
 Tests: `pytest tests/` (20 tests, all passing).

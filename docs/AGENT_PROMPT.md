@@ -52,7 +52,7 @@ RULES
 Do WORKPLAN Step 1 (Project setup).
 
 Create:
-- Folder structure: data/raw, data/processed, R/, python/, sql/, app/, docs/, tests/
+- Folder structure: data/raw, data/processed, analysis/, pipeline/, sql/, app/, docs/, tests/
   (add .gitkeep in empty folders).
 - README.md: project title, one-paragraph summary, how to open in Codespaces,
   how to run each step, data sources and licences, author Dennis Wambua.
@@ -65,11 +65,11 @@ Create:
 - .devcontainer/devcontainer.json (+ Dockerfile if needed): R, Python, GDAL/GEOS/PROJ,
   docker-in-docker or compose integration, forwards port 5432 and 3838.
 - requirements.txt with pinned versions.
-- R/00_setup.R that installs the R packages listed in the master prompt and runs renv::snapshot().
+- analysis/setup/00_setup.R that installs the R packages listed in the master prompt and runs renv::snapshot().
 - sql/00_init.sql: CREATE EXTENSION postgis; create schema talent.
 - tests/test_environment.py: checks Python imports and that PostGIS answers
   SELECT PostGIS_Version().
-- R/tests/test_environment.R: checks R packages load and that a point round-trips
+- analysis/tests/test_environment.R: checks R packages load and that a point round-trips
   EPSG:4326 -> 27700 -> 4326 within 1 m.
 
 Then show me the exact commands to start PostGIS and run both tests.
@@ -80,22 +80,22 @@ Then show me the exact commands to start PostGIS and run both tests.
 ```
 Do WORKPLAN Step 2.
 
-1. R/01_club_tiers.R: build data/processed/club_season_tier.csv
+1. analysis/prepare/01_club_tiers.R: build data/processed/club_season_tier.csv
    (club, season, tier) from engsoccerdata for 1992/93–2015/16.
    Create data/manual/club_season_tier_2016_2026.csv as a template for the seasons I
    will compile by hand (2016/17–2025/26). Merge both and check every season has the
    right number of clubs per tier.
-2. python/01_club_qids.py: map each club name to its Wikidata QID; write unmatched
+2. pipeline/01_club_qids.py: map each club name to its Wikidata QID; write unmatched
    clubs to a list for me to fix manually.
-3. python/02_fetch_wikidata.py: for batches of club QIDs, fetch players (P106=Q937857,
+3. pipeline/02_fetch_wikidata.py: for batches of club QIDs, fetch players (P106=Q937857,
    P21=Q6581097) with birth date, birthplace, coordinates, position, and P54 memberships
    with start (P580), end (P582) and matches played (P1350). Save dated Parquet snapshots.
-4. python/03_eligibility.py: apply the season assignment rule from the proposal
+4. pipeline/03_eligibility.py: apply the season assignment rule from the proposal
    (section 6.6) exactly, flag season_ambiguous, keep players with a tier 1–2 season,
    flag the Premier League subset, filter births 1975–2005, deduplicate on QID,
    split English-born vs others, and write the exclusion log.
-5. python/04_geocode_fallback.py: only for missing coordinates; town -> county -> country.
-6. python/05_validation_sample.py: draw a seeded random sample of 200 players to a CSV
+5. pipeline/04_geocode_fallback.py: only for missing coordinates; town -> county -> country.
+6. pipeline/05_validation_sample.py: draw a seeded random sample of 200 players to a CSV
    for my manual check against squad lists.
 7. Produce docs/reports/data_quality_step2.md with counts per season, % with coordinates,
    English-born share, % ambiguous, and exclusions by reason.

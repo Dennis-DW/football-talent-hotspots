@@ -572,7 +572,7 @@ refs = [
  "Office for National Statistics. (n.d.). <i>Population estimates for local authorities in England and Wales</i> [Data set]. Nomis.",
  "Openshaw, S. (1984). <i>The modifiable areal unit problem</i> (Concepts and Techniques in Modern Geography No. 38). Geo Books.",
  "Riebler, A., Sørbye, S. H., Simpson, D., &amp; Rue, H. (2016). An intuitive Bayesian spatial model for disease mapping that accounts for scaling. <i>Statistical Methods in Medical Research, 25</i>(4), 1145–1165.",
- "Ripley, B. D. (1977). Modelling spatial patterns. <i>Journal of the Royal Statistical Society: Series B, 39</i>(2), 172–212.",
+ "Ripley, B. D. (1977). Modelling spatial patterns. <i>Journal of the Royal Statistical Society: Series B, 39</i>(2), 172–192.",
  "Vrandečić, D., &amp; Krötzsch, M. (2014). Wikidata: A free collaborative knowledgebase. <i>Communications of the ACM, 57</i>(10), 78–85.",
 ]
 for r in refs:

@@ -1,6 +1,6 @@
 # Data Quality Report — Step 2
 
-*Generated 2026-11-18 by `python/07_quality_report.py`. Source snapshot: `wikidata_memberships_2026-11-02.parquet`.*
+*Generated 2026-11-18 by `pipeline/reports/07_quality_report.py`. Source snapshot: `wikidata_memberships_2026-11-02.parquet`.*
 
 ## Summary
 
@@ -16,14 +16,14 @@
 | Premier League subset (certain + probable) | 4,081 (62.0%) |
 | – Premier League, certain only | 2,102 |
 | **English-born** | **3,081** (46.8%) |
-| English-born with a town/admin-level birthplace (usable for spatial analysis) | 3,035 |
+| English-born with a town/admin-level birthplace (usable for spatial analysis) | 2,937 |
 | Study players with birthplace coordinates | 6,566 (99.8%) |
 
 ## Validation and eligibility rule
 
 **Validation of the first rule (Wikidata memberships only).** A seeded sample of 200
 players (150 included, 50 excluded) was checked against English Wikipedia infoboxes, which
-list league appearances per club spell (`python/08_validate_wikipedia.py`,
+list league appearances per club spell (`pipeline/validation/08_validate_wikipedia.py`,
 `data/manual/validation_sample_claude.csv`).
 
 | Measure | Result |
@@ -36,7 +36,7 @@ list league appearances per club spell (`python/08_validate_wikipedia.py`,
 Almost all false inclusions were players under contract, often academy players, who never
 made a league appearance for the club. Because the false-inclusion rate was well above
 10%, the eligibility rule was tightened (WORKPLAN decision point,
-`python/04b_appearance_evidence.py`):
+`pipeline/players/04b_appearance_evidence.py`):
 
 - **certain**: ≥1 league appearance (infobox caps) in a spell at a club that was tier 1–2 in
   every season of the spell;
@@ -69,7 +69,8 @@ infobox appearance counts, which by convention are league appearances.
 | country | wikidata | 86 |
 | no birthplace |  | 14 |
 | no coordinates |  | 1 |
-| town | wikidata | 6403 |
+| region | wikidata | 98 |
+| town | wikidata | 6305 |
 
 Country-level birthplaces (e.g. "England") cannot be placed on a local map and are excluded
 from the spatial analyses; they remain in the descriptive analysis (RQ4).

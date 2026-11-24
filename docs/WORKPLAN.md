@@ -70,32 +70,32 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 **Goal:** a clean list of players born 1975–2005 who played in the Premier League or Championship, with birthplaces.
 
 - [x] Build the **club–season–tier table**: which clubs were in each division in each season from 1992/93. → `data/processed/club_season_tier.csv` (1985/86–2025/26, tiers 1–4)
-  - [x] Seasons 1985/86–2024/25 from `engsoccerdata` (`R/01_club_tiers_engsoc.R`) — the package now runs to 2024/25.
-  - [x] Missing seasons (**2022/23 and 2025/26** only) from Wikipedia league tables (`python/01_league_tables_wikipedia.py`), no hand compilation needed.
+  - [x] Seasons 1985/86–2024/25 from `engsoccerdata` (`analysis/prepare/01_club_tiers_engsoc.R`) — the package now runs to 2024/25.
+  - [x] Missing seasons (**2022/23 and 2025/26** only) from Wikipedia league tables (`pipeline/clubs/01_league_tables_wikipedia.py`), no hand compilation needed.
   - [x] Cross-checked 2016/17–2024/25 against Wikipedia: 32 season-tiers, 0 mismatches.
-- [x] Map each club to its Wikidata ID (`python/02_club_qids.py`): 117 clubs, 9 manual fixes in `data/manual/club_qid_overrides.csv`.
-- [x] Query players by club (`python/03_fetch_wikidata.py`): birthplace, coordinates, birth date, position, club start/end dates (+ precision) and matches played.
+- [x] Map each club to its Wikidata ID (`pipeline/clubs/02_club_qids.py`): 117 clubs, 9 manual fixes in `data/manual/club_qid_overrides.csv`.
+- [x] Query players by club (`pipeline/players/03_fetch_wikidata.py`): birthplace, coordinates, birth date, position, club start/end dates (+ precision) and matches played.
 - [x] Save to `data/raw/` as dated Parquet snapshots (`wikidata_*_2026-11-02.parquet`).
-- [x] Write down the **season assignment rule** *before* looking at the data (`python/season_rule.py`, 13 unit tests):
+- [x] Write down the **season assignment rule** *before* looking at the data (`pipeline/season_rule.py`, 13 unit tests):
   - year-only **start** year Y → season beginning August Y (2004 → 2004/05)
   - year-only **end** year Y → season ending May Y (2004 → 2003/04)
   - full dates → the season that contains them (June/July → next season)
   - eligibility that depends on a year-only date in a promotion/relegation season → flag `season_ambiguous`
-- [x] Keep players whose club membership overlaps a tier 1–2 season for that club; flag the Premier League subset (`python/04_eligibility.py`).
+- [x] Keep players whose club membership overlaps a tier 1–2 season for that club; flag the Premier League subset (`pipeline/players/04_eligibility.py`).
 - [x] Clean the data:
   - [x] keep birth years 1975–2005
   - [x] remove duplicates
   - [x] remove points in the sea or in the wrong country (snapped ≤10 km to coast, else flagged)
   - [x] log every removed record with the reason (`data/processed/exclusion_log.csv`)
-- [x] Split into **English-born** (main analysis) and **foreign / other UK-born** (descriptive) (`R/02_birth_country.R`).
-- [x] Geocode the few birthplaces missing coordinates (`python/05_geocode_fallback.py`) — only 1 needed; also flags country/county-level birthplaces.
-- [x] **Validate eligibility:** 200 random players (150 included + 50 excluded) checked against English Wikipedia infobox league appearances (`python/08_validate_wikipedia.py` → `data/manual/validation_sample_claude.csv`).
+- [x] Split into **English-born** (main analysis) and **foreign / other UK-born** (descriptive) (`analysis/prepare/02_birth_country.R`).
+- [x] Geocode the few birthplaces missing coordinates (`pipeline/players/05_geocode_fallback.py`) — only 1 needed; also flags country/county-level birthplaces.
+- [x] **Validate eligibility:** 200 random players (150 included + 50 excluded) checked against English Wikipedia infobox league appearances (`pipeline/validation/08_validate_wikipedia.py` → `data/manual/validation_sample_claude.csv`).
   - Wikidata-only rule: **false inclusions 18.6%**, false exclusions 6.8%, Premier League flag wrong 18.6% — mostly contracted/academy players with 0 league appearances.
-  - **Decision point triggered → rule tightened** (`python/04b_appearance_evidence.py`): eligibility now needs evidence of ≥1 tier 1–2 league appearance — *certain* (spell entirely in tier 1–2 seasons) or *probable* (club changed division during the spell). Main analysis = certain + probable; sensitivity = certain only.
+  - **Decision point triggered → rule tightened** (`pipeline/players/04b_appearance_evidence.py`): eligibility now needs evidence of ≥1 tier 1–2 league appearance — *certain* (spell entirely in tier 1–2 seasons) or *probable* (club changed division during the spell). Main analysis = certain + probable; sensitivity = certain only.
   - Also added: **men only** filter (160 women's players had been linked to men's club items).
   - Result: **6,581 study players**, **3,081 English-born** (3,017 with a town-level birthplace).
 
-**Pipeline order (Step 2):** `R/01_club_tiers_engsoc.R` → `python/01_…` → `02_…` → `03_fetch_wikidata.py` → `04_eligibility.py` → `04b_appearance_evidence.py` → `05_geocode_fallback.py` → `R/02_birth_country.R` → `06_validation_sample.py`* → `08_validate_wikipedia.py`* → `07_quality_report.py`   (*only to redraw/recheck the validation sample)
+**Pipeline order (Step 2):** `analysis/prepare/01_club_tiers_engsoc.R` → `pipeline/clubs/01_…` → `02_…` → `pipeline/players/03_fetch_wikidata.py` → `04_eligibility.py` → `04b_appearance_evidence.py` → `05_geocode_fallback.py` → `analysis/prepare/02_birth_country.R` → `pipeline/validation/06_validation_sample.py`* → `08_validate_wikipedia.py`* → `pipeline/reports/07_quality_report.py`   (*only to redraw/recheck the validation sample)
 
 ✅ **Output:** `players_clean.parquet` plus a **data quality report** (players per season and club, % with coordinates, English-born share, records removed, % ambiguous, validation error rate). ← **Milestone M1**
 
@@ -107,16 +107,16 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 **Goal:** population, deprivation, urbanisation and club/academy distances for English areas.
 
-- [x] Download from the ONS Open Geography Portal (`python/11_ons_boundaries.py`): **LAD 2021** (309 in England) and **LSOA 2021** boundaries, plus the LSOA→LAD 2021 lookup. MSOA skipped (optional extension).
+- [x] Download from the ONS Open Geography Portal (`pipeline/areas/11_ons_boundaries.py`): **LAD 2021** (309 in England) and **LSOA 2021** boundaries, plus the LSOA→LAD 2021 lookup. MSOA skipped (optional extension).
   - LAD **2021** rather than current boundaries: the only LAD series back-cast to 1981 on Nomis.
-- [x] Births baseline (`python/10_births_baseline.py`). **Change:** ONS LA live births on Nomis start in **2013**, so the baseline is **male infants aged under 1** from ONS mid-year estimates (NM_31_1, 1981→), averaged over two mid-years; 1976–80 from ages 1–4 in 1981, 1975 from ages 5–9 in 1981. No gaps for any of the 309 LADs.
+- [x] Births baseline (`pipeline/areas/10_births_baseline.py`). **Change:** ONS LA live births on Nomis start in **2013**, so the baseline is **male infants aged under 1** from ONS mid-year estimates (NM_31_1, 1981→), averaged over two mid-years; 1976–80 from ages 1–4 in 1981, 1975 from ages 5–9 in 1981. No gaps for any of the 309 LADs.
 - [x] ONS mid-year total population 1981–2005 saved for the total-population sensitivity analysis.
 - [x] English Indices of Deprivation **2025** (LSOA 2021), File 7.
 - [x] Rural-Urban Classification **2021** (LSOA), from the same ONS LSOA layer.
 - [ ] GHS-POP 1 km grids — **moved to Step 5**, where the point-pattern intensity surface is built.
-- [x] Club ground locations for all professional clubs by season (`python/09_club_grounds.py`): Wikidata home venues + 6 documented ground-share overrides (`data/manual/club_ground_overrides.csv`).
+- [x] Club ground locations for all professional clubs by season (`pipeline/clubs/09_club_grounds.py`): Wikidata home venues + 6 documented ground-share overrides (`data/manual/club_ground_overrides.csv`).
 - [ ] Category 1 academy list (2012 onward) — **template only** (`data/manual/category1_academies.csv`); no authoritative list exists, so it is compiled club by club with a source URL before the Step 7 sub-model.
-- [x] `R/03_area_covariates.R` per LAD (→ `data/processed/lad21_covariates.csv`):
+- [x] `analysis/prepare/03_area_covariates.R` per LAD (→ `data/processed/lad21_covariates.csv`):
   - [x] population-weighted IMD score
   - [x] urban share
   - [x] births-weighted distance to the nearest professional club **in the season each cohort was aged 12**
@@ -132,7 +132,7 @@ The project runs in **8 steps**. Each step ends with a concrete output that is c
 
 **Goal:** observed vs. expected player counts for each area.
 
-All in `R/04_expected_counts.R`; tests in `tests/test_counts.py`.
+All in `analysis/prepare/04_expected_counts.R`; tests in `tests/test_counts.py`.
 
 - [x] Create the 10 km and 20 km hexagon grids in British National Grid (EPSG:27700): 1,551 and 439 populated hexagons.
 - [x] **New unit: Travel to Work Areas 2011** (155 in England). Added because LAD results showed a strong **hospital effect** (birthplaces recorded at the maternity-hospital town: e.g. Oxford SR 3.68 while its four neighbouring districts are 0.00–0.60; Oxfordshire combined 0.92). TTWAs contain a town and its catchment. **Main unit for Steps 5–7 (decided 18 Nov 2026)**; LADs and 20 km hexagons kept for comparison, 10 km hexagons exploratory only (too sparse). TTWA covariates: `data/processed/ttwa_covariates.csv`. Report: `docs/reports/step4_report.md`.
@@ -151,7 +151,7 @@ All in `R/04_expected_counts.R`; tests in `tests/test_counts.py`.
 
 ## Step 5: RQ1, is there clustering beyond population? (Week 3)
 
-All in `R/05_clustering.R` (outputs `data/processed/step5_*.csv`, `docs/reports/figures/step5_*.png`).
+All in `analysis/models/05_clustering.R` (outputs `data/processed/step5_*.csv`, `docs/reports/figures/step5_*.png`).
 
 - [x] Players per 10,000 male births by region (9 English regions; Poisson test vs. births): London 4.56 (SR 1.44), North West 4.29 (1.36) … South East 2.13 (0.67), South West 1.87 (0.59); 7 of 9 regions differ significantly (p < 0.05). TTWA/LAD SR maps in Step 4.
 - [x] KDE maps of players and of male births (σ = 15 km), plus a relative-risk surface (births instead of total population — consistent with the expected counts).
@@ -167,7 +167,7 @@ All in `R/05_clustering.R` (outputs `data/processed/step5_*.csv`, `docs/reports/
 
 ## Step 6: RQ2, where are the hotspots? (Week 4)
 
-All in `R/06_hotspots.R` (outputs `data/processed/step6_*.csv`, `docs/reports/figures/step6_*.png`).
+All in `analysis/models/06_hotspots.R` (outputs `data/processed/step6_*.csv`, `docs/reports/figures/step6_*.png`).
 
 - [x] Apply Empirical Bayes smoothing to the SR (`spdep::EBest`).
 - [x] Global EB Moran's I (999 permutations): **TTWA I = 0.27, p = 0.001** (queen and knn6); LAD 0.03–0.05 (p 0.04–0.21); 20 km hexagons 0.02–0.05 (p 0.02–0.22).
@@ -186,15 +186,15 @@ All in `R/06_hotspots.R` (outputs `data/processed/step6_*.csv`, `docs/reports/fi
 ## Step 7: RQ3 explaining the hotspots, and RQ4 foreign-born supply (Week 5)
 
 **RQ3**
-All in `R/07_models.R` (outputs `data/processed/step7_*.csv`, `docs/reports/figures/step7_rate_ratios.png`). Unit: 155 TTWAs.
+All in `analysis/models/07_models.R` (outputs `data/processed/step7_*.csv`, `docs/reports/figures/step7_rate_ratios.png`). Unit: 155 TTWAs.
 
 - [x] **Main** negative binomial model (offset log E; Poisson dispersion 2.28 → NB): IMD, urban share, distance to nearest professional club at age 12, + region fixed effects (VIF ≤ 1.8). Region effects improve fit (LR χ² = 24.8, df 8, p = 0.002).
   - **Distance to club: RR 0.86 per +10 km (95% CI 0.79–0.93, p = 0.0004)** — robust.
   - Deprivation: RR 1.14 per +10 IMD points without region (p = 0.03) → **0.95 (p = 0.46) with region**: the deprivation link is a proxy for the North.
   - Urban share: no effect (RR 1.04, p = 0.18).
   - Region RR vs. West Midlands: North West 1.39, North East 1.39, Yorkshire 1.17, London 1.10 … South East 0.78, South West 0.77.
-- [x] **Category 1 academy list** (`python/13_category1_academies.py` → `data/manual/category1_academies.csv`): clubs in "League 1" of each season's U18 national league (Category 1 only), Wikipedia season articles with revision ids; 21–26 academies per season, 28 clubs in total, 2012/13–2021/22 (2012/13 and 2021/22 imputed from the nearest season — no article).
-- [x] **Academy-era sub-model** (`R/07b_academy_model.R`; 594 players born 1996–2005): distance to any professional club **RR 0.74 per +10 km (p < 0.001)**; distance to a Category 1 academy **RR 1.00 (p = 0.93)**; both together 0.73 / 1.03 — proximity to *any* club matters, not to an elite academy. (Club stadium used as a proxy for the academy location.)
+- [x] **Category 1 academy list** (`pipeline/clubs/13_category1_academies.py` → `data/manual/category1_academies.csv`): clubs in "League 1" of each season's U18 national league (Category 1 only), Wikipedia season articles with revision ids; 21–26 academies per season, 28 clubs in total, 2012/13–2021/22 (2012/13 and 2021/22 imputed from the nearest season — no article).
+- [x] **Academy-era sub-model** (`analysis/models/07b_academy_model.R`; 594 players born 1996–2005): distance to any professional club **RR 0.74 per +10 km (p < 0.001)**; distance to a Category 1 academy **RR 1.00 (p = 0.93)**; both together 0.73 / 1.03 — proximity to *any* club matters, not to an elite academy. (Club stadium used as a proxy for the academy location.)
 - [x] Club-distance effect before vs. after EPPP (cohorts): RR 0.91 (1975–89, p = 0.06) vs. **0.76 (1990–2005, p < 0.001)**.
 - [x] Residual spatial autocorrelation: M1 Moran's I 0.17 (p = 0.002) → **M2 0.03 (p = 0.26)**: region effects absorb it. Robust LM tests all non-significant (p ≥ 0.30); spatial error (λ = 0.07, p = 0.56) and lag (ρ = 0.03, p = 0.77) models add nothing (OLS lowest AIC) and confirm the distance effect (p ≈ 0.015).
 - [ ] *(optional)* BYM2 with R-INLA — not done.
@@ -208,7 +208,7 @@ All in `R/07_models.R` (outputs `data/processed/step7_*.csv`, `docs/reports/figu
   - [x] excluding `season_ambiguous`: 0.86 (p = 0.001); certain-evidence only: 0.85 (p = 0.002)
 
 **RQ4**
-All in `R/08_foreign_born.R` (+ `python/14_country_population.py`); maps `docs/reports/figures/rq4_*.png`.
+All in `analysis/models/08_foreign_born.R` (+ `pipeline/countries/14_country_population.py`); maps `docs/reports/figures/rq4_*.png`.
 
 - [x] Count foreign-born and other UK-born players by country of birth: 6,581 study players from 143 countries/UK nations; 46.8% England, 6.7% other UK nations, 46.3% outside the UK. Top: France 372, Scotland 233, Ireland 223, Spain 222, Netherlands 161.
 - [x] Players per million national population (mean 1975–2005): **World Bank WDI** (derived from UN WPP) instead of downloading UN WPP directly; ONS for England/Scotland/Wales; none for Northern Ireland. Highest (≥10 players): Iceland 106, England 64, Ireland 62, Scotland 46, Wales 41.
@@ -220,7 +220,7 @@ All in `R/08_foreign_born.R` (+ `python/14_country_population.py`); maps `docs/r
 
 ## Step 8: Dashboard, write-up and release (Week 6)
 
-- [x] Build the Shiny app (`app/app.R`, data from `R/09_app_data.R`, ~2 MB; tests `R/tests/test_app.R`):
+- [x] Build the Shiny app (`app/app.R`, data from `analysis/dashboard/09_app_data.R`, ~2 MB; tests `analysis/tests/test_app.R`):
   - [x] England hotspot map — TTWA / LAD / 20 km hexagons; smoothed SR, raw SR or Gi\* classes; popups with O, E, SR, Gi\*
   - [x] players map — clustered birthplaces with public Wikidata details
   - [x] density explorer — relative-risk raster, L-function with envelope, global tests, regional table
@@ -228,7 +228,7 @@ All in `R/08_foreign_born.R` (+ `python/14_country_population.py`); maps `docs/r
   - [x] foreign-born world map — per million / counts, by cohort, top-25 table
   - [x] filters — birth years, Premier League only, certain evidence only, position; O/E and Empirical Bayes SR recomputed live (region filter replaced by the map itself)
   - [x] About page — findings, how to read, limitations, sources and licence statements
-- [ ] Deploy it to shinyapps.io — script ready (`R/10_deploy.R`); **needs your shinyapps.io account token in `.env`**.
+- [ ] Deploy it to shinyapps.io — script ready (`analysis/dashboard/10_deploy.R`); **needs your shinyapps.io account token in `.env`**.
 - [x] Write the final report: methods, results, limitations → `docs/reports/final_report.md` (+ step reports 2–7).
 - [x] Clean up the repo:
   - [x] a README that explains how to rerun everything (+ `run_all.sh` for the full pipeline)
@@ -274,8 +274,8 @@ football-talent-hotspots/
 │   ├── raw/              # Dated Wikidata snapshots, ONS downloads (not in Git)
 │   └── processed/        # Cleaned and enriched data (not in Git)
 ├── docs/                 # Proposal, work plan, reports
-├── python/               # Data acquisition and geocoding
-├── R/                    # Spatial processing, statistics, modelling
+├── pipeline/             # Python: clubs/, players/, validation/, areas/, countries/, reports/
+├── analysis/             # R: setup/, prepare/, models/, dashboard/, tests/
 ├── sql/                  # PostGIS schema and queries
 ├── tests/                # Unit and integration tests
 ├── docker-compose.yml    # PostGIS service
